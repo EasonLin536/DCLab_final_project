@@ -1,3 +1,4 @@
+import numpy as np
 from blur import blur
 from paintLayer import paintLayer
 
@@ -22,10 +23,20 @@ def paint(sourceImg, T, fg, fs, fc, maxLen, minLen, brushR, C):
     # A classic parameter set is the Impressionist style: T = 50, fg = 1, 
     # fs = 0.5, fc = 1, maxLen = 16, minLen = 4, brushR = [8,4,2]
 
-    # Paint the entire image a constant color
+    # Empty painting
+    oilImg = np.zeros(sourceImg.shape)
     # Paint the image with multiple brushes
     for brush in brushR:
+        # Empty canvas with single color
+        canvas = np.ones(sourceImg.shape)
+        canvas[:, :, 0] = C[0]
+        canvas[:, :, 1] = C[1]
+        canvas[:, :, 2] = C[2]
         # Blur original image
-        refImage = blur(sourceImg)
+        refImage = blur(sourceImg, fs, brush)
         # Paint a layer
-        paintLayer()
+        layer = paintLayer(canvas, refImage, T, fg, brush)
+
+    # oilImg = canvas
+
+    return oilImg
