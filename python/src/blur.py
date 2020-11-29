@@ -1,9 +1,10 @@
 import cv2
 import math
 import numpy as np
+from style import *
 
 
-def blur(sourceImg, fs, brush):
+def blur(sourceImg, brush):
     # sourceImg : origninal image, type: nparray
     # brush : brush size
     # blurImage : image after blurring
