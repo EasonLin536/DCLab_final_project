@@ -7,7 +7,7 @@ from style import *
 # http://mathesaurus.sourceforge.net/matlab-numpy.html
 
 
-def paintLayer(canvas, refImage, brush, fg):
+def paintLayer(canvas, refImage, brushSize, fg = 1):
     # canvas : image with single color
     # refImage : blurred source image
     # brush : brush size
@@ -22,14 +22,24 @@ def paintLayer(canvas, refImage, brush, fg):
     gradM = (gradX ** 2 + gradY ** 2) ** 0.5
 
     height, width, _ = canvas.shape
-    grid = fg * brush
+    grid = fg * brushSize
+    print("canvas shape:", canvas.shape)
+    print("brushSize:", brushSize)
     print('grid =', grid)
-    for x in range(0, height - grid + 1):
-        for y in range(0, width - grid + 1):
-            gridRegion = diffImage[x: x + grid, y: y + grid]
+    print("x range: 0 ~", height - grid + 1)
+    print("y range: 0 ~", width - grid + 1)
+    xorder = np.arange(grid, height - grid + 1, grid)
+    yorder = np.arange(grid, width - grid + 1, grid)
+    np.random.seed(87)
+    np.random.shuffle(xorder)
+    np.random.shuffle(yorder)
+    print("xorder:", xorder)
+    for x in list(xorder):
+        for y in list(yorder):
+            gridRegion = diffImage[x - grid // 2 + 1: x + grid // 2 + 1, y - grid // 2 + 1: y + grid // 2 + 1]
             gridErr = np.sum(gridRegion) / (grid ** 2)
 
-            print(gridRegion)
+            # print(gridRegion)
 
             if gridErr > T:
                 ind = np.unravel_index(
@@ -37,23 +47,44 @@ def paintLayer(canvas, refImage, brush, fg):
                 x1 = ind[0] + x
                 y1 = ind[1] + y
                 stroke, strokeColor = makeStroke(
-                    brush, x1, y1, refImage, canvas, gradX, gradY, gradM)
+                    brushSize, x1, y1, refImage, canvas, gradX, gradY, gradM)
 
                 if len(stroke) != 0:
-                    tip = circle(brush)
-                    tipX = np.floor(tip.shape[1]/2)
-                    tipY = np.floor(tip.shape[0]/2)
-                    tipR = tip @ strokeColor[0, 0, 0]
-                    tipG = tip @ strokeColor[0, 0, 1]
-                    tipB = tip @ strokeColor[0, 0, 2]
-                    brush = np.array([tipR, tipG, tipB])
+                    tip = circle(brushSize)
+                    tipX = int(np.floor(tip.shape[1]/2))
+                    tipY = int(np.floor(tip.shape[0]/2))
+                    # print("strokeColor:\n", strokeColor)
+                    tipR = tip * strokeColor[0]
+                    tipG = tip * strokeColor[1]
+                    tipB = tip * strokeColor[2]
+                    brush = np.dstack((tipR, tipG, tipB))
                     # TODO : Paint strokes on canvas
-                    print("stroke shape", stroke.shape)
-                    for p in range(stroke.shape[1]):
-                        pass
-
+                    # print("stroke shape", stroke.shape)
+                    # print("stroke:\n", stroke)
+                    for p in range(stroke.shape[0]):
+                        x = stroke[p, 0]
+                        y = stroke[p, 1]
+                        xMax = refImage.shape[1] - tipX
+                        xMin = 1 + tipX
+                        yMax = refImage.shape[0] - tipY
+                        yMin = 1 + tipY
+                        if x >= xMin and x <= xMax and y >= yMin and y <= yMax:
+                            # print("x:", x)
+                            # print("y:", y)
+                            # print("xMax:", xMax)
+                            # print("xMin:", xMin)
+                            # print("yMax:", yMax)
+                            # print("yMin:", yMin)
+                            # print("tipX:", tipX)
+                            # print("tipY:", tipY)
+                            area = layer[y - tipY : y + tipY + 1, x - tipX : x + tipX + 1, 0 : 3]
+                            painted = (area * brush != 0)
+                            clean = (painted == 0)
+                            layer[y - tipY : y + tipY + 1, x - tipX : x + tipX + 1, 0 : 3] \
+                                = area + brush * clean
                     # return gradM
                     # return layer
+    return layer
 
 
 def difference(canvas, refImage):

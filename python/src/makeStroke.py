@@ -7,7 +7,6 @@ def makeStroke(R, x0, y0, refImage, canvas, gradX, gradY, gradM):
     # x0, y0 : initial image coordinate
     # gradX, gradY : gradient direction
     # gradM : gradient magnitude
-
     strokeColor = refImage[x0, y0]
     x = x0
     y = y0
@@ -22,9 +21,9 @@ def makeStroke(R, x0, y0, refImage, canvas, gradX, gradY, gradM):
         
         refColor = refImage[x, y] # refColor at coordinate
         canvasColor = canvas[x, y] # refColor of canvas
-        diffR = abs(refColor[0] - canvasColor[0]) < abs(refColor[0] - strokeColor[0])
-        diffR = abs(refColor[1] - canvasColor[1]) < abs(refColor[1] - strokeColor[1])
-        diffG = abs(refColor[2] - canvasColor[2]) < abs(refColor[2] - strokeColor[2])
+        diffR = abs(int(refColor[0]) - int((canvasColor[0]))) < abs(int(refColor[0]) - int(strokeColor[0]))
+        diffG = abs(int(refColor[1]) - int((canvasColor[1]))) < abs(int(refColor[1]) - int(strokeColor[1]))
+        diffB = abs(int(refColor[2]) - int((canvasColor[2]))) < abs(int(refColor[2]) - int(strokeColor[2]))
         diffColor = (diffR and diffG and diffB)
         
         # returns stroke if refColor difference exceeded
@@ -55,5 +54,5 @@ def makeStroke(R, x0, y0, refImage, canvas, gradX, gradY, gradM):
         dyF = dy
         K.append([x, y]) # updates stroke points
 
-    return K, strokeColor
+    return np.array(K), strokeColor
     # return stroke, strokeColor
