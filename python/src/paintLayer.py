@@ -7,7 +7,7 @@ from style import *
 # http://mathesaurus.sourceforge.net/matlab-numpy.html
 
 
-def paintLayer(canvas, refImage, brush):
+def paintLayer(canvas, refImage, brush, fg):
     # canvas : image with single color
     # refImage : blurred source image
     # brush : brush size
@@ -48,6 +48,7 @@ def paintLayer(canvas, refImage, brush):
                     tipB = tip @ strokeColor[0, 0, 2]
                     brush = np.array([tipR, tipG, tipB])
                     # TODO : Paint strokes on canvas
+                    print("stroke shape", stroke.shape)
                     for p in range(stroke.shape[1]):
                         pass
 
@@ -66,19 +67,19 @@ def difference(canvas, refImage):
 def circle(R):
     if R < 3:
         R = R+1
-    c = np.zeros(R)
+    c = np.zeros((R, R))
     # x is index or number???
     # start from 0 or 1??
-    for x in arange(R, 0, -1):
-        y = (R**2-(x-1)**2)**0.5
-        y = np.floor(y)
-        c[arange(y, 0, -1), x] = np.ones(y, 1)
+    for x in np.arange(R - 1, -1, -1):
+        y = (R**2-x**2)**0.5
+        y = int(np.floor(y))
+        c[np.arange(y - 1, -1, -1), x] = np.ones(y)
     end0 = c.shape[0]-1
     end1 = c.shape[1]-1
-    c = np.concatenate((
-        c[arange(end0, 1, -1), arange(end1, 1, -1)],
-        c[arange(end0, 1, -1), :],
-        c[:, arange(endq, 1, -1)],
-        c
-    ))
+    c_ = c[np.arange(end0, 0, -1), :]
+    c_ = c_[:, np.arange(end1, 0, -1)]
+    c = np.concatenate(
+        (np.concatenate((c_, c[np.arange(end0, 0, -1), :]), axis=1),
+        np.concatenate((c[:, np.arange(end1, 0, -1)], c), axis=1)), axis=0)
+    # print(c)
     return c
