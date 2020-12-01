@@ -30,14 +30,14 @@ def paintLayer(canvas, refImage, brushSize, fg=1):
     print("y range: 0 ~", width - grid + 1)
     xorder = np.arange(grid, height - grid + 1, grid)
     yorder = np.arange(grid, width - grid + 1, grid)
-    np.random.seed(87)
-    np.random.shuffle(xorder)
-    np.random.shuffle(yorder)
+    # np.random.seed(87)
+    # np.random.shuffle(xorder)
+    # np.random.shuffle(yorder)
     print("xorder:", xorder)
-    for x in list(xorder):
-        for y in list(yorder):
-            gridRegion = diffImage[x - grid // 2 + 1: x + grid //
-                                   2 + 1, y - grid // 2 + 1: y + grid // 2 + 1]
+    for x0 in list(xorder):
+        for y0 in list(yorder):
+            gridRegion = diffImage[x0 - grid // 2 + 1: x0 + grid //
+                                   2 + 1, y0 - grid // 2 + 1: y0 + grid // 2 + 1]
             gridErr = np.sum(gridRegion) / (grid ** 2)
 
             # print(gridRegion)
@@ -45,8 +45,8 @@ def paintLayer(canvas, refImage, brushSize, fg=1):
             if gridErr > T:
                 ind = np.unravel_index(
                     np.argmax(gridRegion, axis=None), gridRegion.shape)
-                x1 = ind[0] + x
-                y1 = ind[1] + y
+                x1 = ind[0] + x0
+                y1 = ind[1] + y0
                 stroke, strokeColor = makeStroke(
                     brushSize, x1, y1, refImage, canvas, gradX, gradY, gradM)
 
