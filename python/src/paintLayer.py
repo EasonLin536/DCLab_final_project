@@ -7,7 +7,7 @@ from style import *
 # http://mathesaurus.sourceforge.net/matlab-numpy.html
 
 
-def paintLayer(canvas, refImage, brushSize, fg = 1):
+def paintLayer(canvas, refImage, brushSize, fg=1):
     # canvas : image with single color
     # refImage : blurred source image
     # brush : brush size
@@ -36,7 +36,8 @@ def paintLayer(canvas, refImage, brushSize, fg = 1):
     print("xorder:", xorder)
     for x in list(xorder):
         for y in list(yorder):
-            gridRegion = diffImage[x - grid // 2 + 1: x + grid // 2 + 1, y - grid // 2 + 1: y + grid // 2 + 1]
+            gridRegion = diffImage[x - grid // 2 + 1: x + grid //
+                                   2 + 1, y - grid // 2 + 1: y + grid // 2 + 1]
             gridErr = np.sum(gridRegion) / (grid ** 2)
 
             # print(gridRegion)
@@ -62,13 +63,13 @@ def paintLayer(canvas, refImage, brushSize, fg = 1):
                     # print("stroke shape", stroke.shape)
                     # print("stroke:\n", stroke)
                     for p in range(stroke.shape[0]):
-                        x = stroke[p, 0]
-                        y = stroke[p, 1]
+                        x = stroke[p, 1]
+                        y = stroke[p, 0]
                         xMax = refImage.shape[1] - tipX
                         xMin = 1 + tipX
                         yMax = refImage.shape[0] - tipY
                         yMin = 1 + tipY
-                        if x >= xMin and x <= xMax and y >= yMin and y <= yMax:
+                        if x >= xMin and x < xMax and y >= yMin and y < yMax:
                             # print("x:", x)
                             # print("y:", y)
                             # print("xMax:", xMax)
@@ -77,10 +78,13 @@ def paintLayer(canvas, refImage, brushSize, fg = 1):
                             # print("yMin:", yMin)
                             # print("tipX:", tipX)
                             # print("tipY:", tipY)
-                            area = layer[y - tipY : y + tipY + 1, x - tipX : x + tipX + 1, 0 : 3]
+                            area = layer[y - tipY: y + tipY +
+                                         1, x - tipX: x + tipX + 1, 0: 3]
+                            # print("area", area.shape)
+                            # print("layer:", layer.shape)
                             painted = (area * brush != 0)
                             clean = (painted == 0)
-                            layer[y - tipY : y + tipY + 1, x - tipX : x + tipX + 1, 0 : 3] \
+                            layer[y - tipY: y + tipY + 1, x - tipX: x + tipX + 1, 0: 3] \
                                 = area + brush * clean
                     # return gradM
                     # return layer
@@ -111,6 +115,6 @@ def circle(R):
     c_ = c_[:, np.arange(end1, 0, -1)]
     c = np.concatenate(
         (np.concatenate((c_, c[np.arange(end0, 0, -1), :]), axis=1),
-        np.concatenate((c[:, np.arange(end1, 0, -1)], c), axis=1)), axis=0)
+         np.concatenate((c[:, np.arange(end1, 0, -1)], c), axis=1)), axis=0)
     # print(c)
     return c
