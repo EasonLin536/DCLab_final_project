@@ -30,10 +30,10 @@ def paintLayer(canvas, refImage, brushSize, fg=1):
     print("y range: 0 ~", width - grid + 1)
     xorder = np.arange(grid, height - grid + 1, grid)
     yorder = np.arange(grid, width - grid + 1, grid)
-    # np.random.seed(87)
-    # np.random.shuffle(xorder)
-    # np.random.shuffle(yorder)
-    print("xorder:", xorder)
+    np.random.seed(87)
+    np.random.shuffle(xorder)
+    np.random.shuffle(yorder)
+    # print("xorder:", xorder)
     for x0 in list(xorder):
         for y0 in list(yorder):
             gridRegion = diffImage[x0 - grid // 2 + 1: x0 + grid //
