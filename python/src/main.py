@@ -10,7 +10,7 @@ if __name__ == '__main__':
         saveName = sys.argv[2]
     except:
         imgName = "../input/view.jpg"
-        saveName = "../output/view.jpg"
+        saveName = "../output/view_oil.jpg"
 
     """    Read image    """
     sourceImg = cv2.imread(imgName)  # nparray[width, height, (BGR)]

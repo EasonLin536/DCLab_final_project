@@ -19,7 +19,8 @@ def paintLayer(canvas, refImage, brushSize, fg=1):
     gray = cv2.cvtColor(refImage, cv2.COLOR_BGR2GRAY)
     gradX = cv2.Sobel(gray, -1, 1, 0, ksize=3)
     gradY = cv2.Sobel(gray, -1, 0, 1, ksize=3)
-    gradM = (gradX ** 2 + gradY ** 2) ** 0.5
+    # gradM = (gradX ** 2 + gradY ** 2) ** 0.5
+    gradM = (abs(gradX) + abs(gradY)) / 4
 
     height, width, _ = canvas.shape
     grid = fg * brushSize
