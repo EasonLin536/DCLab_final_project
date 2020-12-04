@@ -21,8 +21,8 @@ def paint(sourceImg, brushR):
 
         blank = (layer == 0)
         notlayer = canvas * blank
-        oilImg = (oilImg)*(oilImg != 0)*blank + (oilImg != 0) * \
-            (layer != 0)*(layer)+(notlayer+layer)*(oilImg == 0)
+        oilImg = (oilImg) * (oilImg != 0) * blank + (oilImg != 0) * \
+            (layer != 0) * (layer) + (notlayer + layer) * (oilImg == 0)
     # oilImg = layer
 
     return oilImg

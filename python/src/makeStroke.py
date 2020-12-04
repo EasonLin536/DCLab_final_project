@@ -4,10 +4,12 @@ from style import *
 from estimate import *
 
 
+
 def makeStroke(R, x0, y0, refImage, canvas, gradX, gradY, gradM):
     # x0, y0 : initial image coordinate
     # gradX, gradY : gradient direction
     # gradM : gradient magnitude
+    
     strokeColor = refImage[x0, y0]
     x = x0
     y = y0
