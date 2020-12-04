@@ -1,6 +1,7 @@
 import math
 import numpy as np
 from style import *
+from estimate import *
 
 
 def makeStroke(R, x0, y0, refImage, canvas, gradX, gradY, gradM):
@@ -47,8 +48,10 @@ def makeStroke(R, x0, y0, refImage, canvas, gradX, gradY, gradM):
         dx = fc * dx + (1 - fc) * dxF
         dy = fc * dy + (1 - fc) * dyF
         # normalises gradient
-        dx = dx / (dx ** 2 + dy ** 2) ** 0.5
-        dy = dy / (dx ** 2 + dy ** 2) ** 0.5
+        d = dx ** 2 + dy ** 2
+        dx = dx / square(d)
+        dy = dy / square(d)
+        # print(d ** 0.5)
         # advances coordinate by integer amount of gradient scaled by
         # brush size
         x = math.floor(x + R * dx)

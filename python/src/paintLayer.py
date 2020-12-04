@@ -2,9 +2,11 @@ import cv2
 import numpy as np
 from makeStroke import makeStroke
 from style import *
+from estimate import *
 
 # NumPy for MATLAB users
 # http://mathesaurus.sourceforge.net/matlab-numpy.html
+
 
 
 def paintLayer(canvas, refImage, brushSize, fg=1):
@@ -19,7 +21,7 @@ def paintLayer(canvas, refImage, brushSize, fg=1):
     gray = cv2.cvtColor(refImage, cv2.COLOR_BGR2GRAY)
     gradX = cv2.Sobel(gray, -1, 1, 0, ksize=3)
     gradY = cv2.Sobel(gray, -1, 0, 1, ksize=3)
-    gradM = (gradX ** 2 + gradY ** 2) ** 0.5
+    gradM = (abs(gradX) + abs(gradY)) * 0.25
 
     height, width, _ = canvas.shape
     grid = fg * brushSize
@@ -106,8 +108,7 @@ def circle(R):
     # x is index or number???
     # start from 0 or 1??
     for x in np.arange(R - 1, -1, -1):
-        y = (R**2-x**2)**0.5
-        y = int(np.floor(y))
+        y = square((R - x) * (R + x))
         c[np.arange(y - 1, -1, -1), x] = np.ones(y)
     end0 = c.shape[0]-1
     end1 = c.shape[1]-1
