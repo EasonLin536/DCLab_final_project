@@ -92,11 +92,15 @@ def paintLayer(canvas, refImage, brushSize, fg=1):
 
 
 def difference(canvas, refImage):
-    diff_ch0 = (canvas[:, :, 0] - refImage[:, :, 0]) ** 2
-    diff_ch1 = (canvas[:, :, 1] - refImage[:, :, 1]) ** 2
-    diff_ch2 = (canvas[:, :, 2] - refImage[:, :, 2]) ** 2
+    # diff_ch0 = (canvas[:, :, 0] - refImage[:, :, 0]) ** 2
+    # diff_ch1 = (canvas[:, :, 1] - refImage[:, :, 1]) ** 2
+    # diff_ch2 = (canvas[:, :, 2] - refImage[:, :, 2]) ** 2
+    diff_ch0 = abs(canvas[:, :, 0] - refImage[:, :, 0])
+    diff_ch1 = abs(canvas[:, :, 1] - refImage[:, :, 1])
+    diff_ch2 = abs(canvas[:, :, 2] - refImage[:, :, 2])
 
-    return (diff_ch0 + diff_ch1 + diff_ch2) ** 0.5
+    # return (diff_ch0 + diff_ch1 + diff_ch2) ** 0.5
+    return (diff_ch0 + diff_ch1 + diff_ch2)
 
 
 def circle(R):
@@ -107,6 +111,7 @@ def circle(R):
     # start from 0 or 1??
     for x in np.arange(R - 1, -1, -1):
         y = (R**2-x**2)**0.5
+        # y = abs(R-x)
         y = int(np.floor(y))
         c[np.arange(y - 1, -1, -1), x] = np.ones(y)
     end0 = c.shape[0]-1
