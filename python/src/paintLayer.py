@@ -43,53 +43,57 @@ def paintLayer(canvas, refImage, brushSize, fg=1):
             gridErr = np.sum(gridRegion) / (grid ** 2)
 
             # print(gridRegion)
-
+            # print("x0, y0:", x0, y0)
             if gridErr > T:
                 ind = np.unravel_index(
                     np.argmax(gridRegion, axis=None), gridRegion.shape)
-                x1 = ind[0] + x0
-                y1 = ind[1] + y0
-                stroke, strokeColor = makeStroke(
-                    brushSize, x1, y1, refImage, canvas, gradX, gradY, gradM)
-
-                if len(stroke) != 0:
-                    tip = circle(brushSize)
-                    tipX = int(np.floor(tip.shape[1]/2))
-                    tipY = int(np.floor(tip.shape[0]/2))
-                    # print("strokeColor:\n", strokeColor)
-                    tipR = tip * strokeColor[0]
-                    tipG = tip * strokeColor[1]
-                    tipB = tip * strokeColor[2]
-                    brush = np.dstack((tipR, tipG, tipB))
-                    # TODO : Paint strokes on canvas
-                    # print("stroke shape", stroke.shape)
-                    # print("stroke:\n", stroke)
-                    for p in range(stroke.shape[0]):
-                        x = stroke[p, 1]
-                        y = stroke[p, 0]
-                        xMax = refImage.shape[1] - tipX
-                        xMin = 1 + tipX
-                        yMax = refImage.shape[0] - tipY
-                        yMin = 1 + tipY
-                        if x >= xMin and x < xMax and y >= yMin and y < yMax:
-                            # print("x:", x)
-                            # print("y:", y)
-                            # print("xMax:", xMax)
-                            # print("xMin:", xMin)
-                            # print("yMax:", yMax)
-                            # print("yMin:", yMin)
-                            # print("tipX:", tipX)
-                            # print("tipY:", tipY)
-                            area = layer[y - tipY: y + tipY +
-                                         1, x - tipX: x + tipX + 1, 0: 3]
-                            # print("area", area.shape)
-                            # print("layer:", layer.shape)
-                            painted = (area * brush != 0)
-                            clean = (painted == 0)
-                            layer[y - tipY: y + tipY + 1, x - tipX: x + tipX + 1, 0: 3] \
-                                = area + brush * clean
-                    # return gradM
-                    # return layer
+                x = ind[0] + x0
+                y = ind[1] + y0
+                # print("x, y:", x, y)
+                dxF, dyF, strokeLen, finish = 0, 0, 0, 0 
+                strokeColor = refImage[x, y]
+                tip = circle(brushSize)
+                tipX = int(np.floor(tip.shape[1]/2))
+                tipY = int(np.floor(tip.shape[0]/2))
+                # print("strokeColor:\n", strokeColor)
+                tipR = tip * strokeColor[0]
+                tipG = tip * strokeColor[1]
+                tipB = tip * strokeColor[2]
+                brush = np.dstack((tipR, tipG, tipB))
+                # TODO : Paint strokes on canvas
+                # print("stroke shape", stroke.shape)
+                # print("stroke:\n", stroke)
+                while True:
+                    if finish:
+                        # print("finish")
+                        break
+                    # print("(x, y)=", x, y)
+                    xMax = refImage.shape[0] - tipX
+                    xMin = 1 + tipX
+                    yMax = refImage.shape[1] - tipY
+                    yMin = 1 + tipY
+                    if x >= xMin and x < xMax and y >= yMin and y < yMax:
+                        # print("x:", x)
+                        # print("y:", y)
+                        # print("xMax:", xMax)
+                        # print("xMin:", xMin)
+                        # print("yMax:", yMax)
+                        # print("yMin:", yMin)
+                        # print("tipX:", tipX)
+                        # print("tipY:", tipY)
+                        area = layer[x - tipX: x + tipX + 1, y - tipY: y + tipY + 1, 0: 3]
+                        # print("area", area.shape)
+                        # print("layer:", layer.shape)
+                        painted = (area * brush != 0)
+                        clean = (painted == 0)
+                        layer[x - tipX: x + tipX + 1, y - tipY: y + tipY + 1, 0: 3] \
+                            = area + brush * clean
+                    stroke, dxF, dyF, strokeLen, finish = makeStroke(
+                        brushSize, x, y, refImage, canvas, gradX, gradY, gradM, strokeLen, dxF, dyF, strokeColor)
+                    x = stroke[0]
+                    y = stroke[1]
+                # return gradM
+                # return layer
     return layer
 
 
