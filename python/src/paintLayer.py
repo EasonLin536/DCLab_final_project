@@ -14,7 +14,7 @@ def paintLayer(canvas, refImage, brushSize, fg=1):
     # refImage : blurred source image
     # brush : brush size
 
-    layer = np.zeros(canvas.shape)
+    layer = np.zeros(refImage.shape)
     # Calculate difference
     diffImage = difference(canvas, refImage)
     # Calculate gradient
@@ -23,9 +23,8 @@ def paintLayer(canvas, refImage, brushSize, fg=1):
     gradY = cv2.Sobel(gray, -1, 0, 1, ksize=3)
     gradM = (abs(gradX) + abs(gradY)) * 0.25
 
-    height, width, _ = canvas.shape
+    height, width, _ = refImage.shape
     grid = fg * brushSize
-    print("canvas shape:", canvas.shape)
     print("brushSize:", brushSize)
     print('grid =', grid)
     print("x range: 0 ~", height - grid + 1)
@@ -101,10 +100,9 @@ def difference(canvas, refImage):
     # diff_ch0 = (canvas[:, :, 0] - refImage[:, :, 0]) ** 2
     # diff_ch1 = (canvas[:, :, 1] - refImage[:, :, 1]) ** 2
     # diff_ch2 = (canvas[:, :, 2] - refImage[:, :, 2]) ** 2
-    diff_ch0 = abs(canvas[:, :, 0] - refImage[:, :, 0])
-    diff_ch1 = abs(canvas[:, :, 1] - refImage[:, :, 1])
-    diff_ch2 = abs(canvas[:, :, 2] - refImage[:, :, 2])
-
+    diff_ch0 = np.array(abs(canvas[0] - refImage[:, :, 0]), dtype = 'int64')
+    diff_ch1 = np.array(abs(canvas[1] - refImage[:, :, 1]), dtype = 'int64')
+    diff_ch2 = np.array(abs(canvas[2] - refImage[:, :, 2]), dtype = 'int64')
     # return (diff_ch0 + diff_ch1 + diff_ch2) ** 0.5
     return (diff_ch0 + diff_ch1 + diff_ch2)
 

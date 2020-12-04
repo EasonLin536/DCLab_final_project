@@ -25,7 +25,7 @@ def makeStroke(R, x0, y0, refImage, canvas, gradX, gradY, gradM, strokeLen, dxF,
     else:
 
         refColor = refImage[x, y]  # refColor at coordinate
-        canvasColor = canvas[x, y]  # refColor of canvas
+        canvasColor = canvas  # refColor of canvas
         diffR = abs(int(refColor[0]) - int((canvasColor[0]))
                     ) < abs(int(refColor[0]) - int(strokeColor[0]))
         diffG = abs(int(refColor[1]) - int((canvasColor[1]))
