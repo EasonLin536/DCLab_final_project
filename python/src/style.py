@@ -23,5 +23,5 @@ fs     = 0.5
 fc     = 1
 maxLen = 16
 minLen = 4
-brushR = [8, 4] # largest brush strokes painted first
+brushR = [8, 4, 2] # largest brush strokes painted first
 C      = [128, 128, 128] # background color
