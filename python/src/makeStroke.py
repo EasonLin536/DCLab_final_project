@@ -3,10 +3,12 @@ import numpy as np
 from style import *
 
 
+
 def makeStroke(R, x0, y0, refImage, canvas, gradX, gradY, gradM):
     # x0, y0 : initial image coordinate
     # gradX, gradY : gradient direction
     # gradM : gradient magnitude
+    
     strokeColor = refImage[x0, y0]
     x = x0
     y = y0
@@ -47,8 +49,9 @@ def makeStroke(R, x0, y0, refImage, canvas, gradX, gradY, gradM):
         dx = fc * dx + (1 - fc) * dxF
         dy = fc * dy + (1 - fc) * dyF
         # normalises gradient
-        dx = dx / (dx ** 2 + dy ** 2) ** 0.5
-        dy = dy / (dx ** 2 + dy ** 2) ** 0.5
+        dx = dx / ((dx ** 2 + dy ** 2) ** 0.5)
+        dy = dy / ((dx ** 2 + dy ** 2) ** 0.5)
+
         # advances coordinate by integer amount of gradient scaled by
         # brush size
         x = math.floor(x + R * dx)
