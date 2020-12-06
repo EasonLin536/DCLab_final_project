@@ -13,6 +13,17 @@ def grayScale(image):
     return gray
 
 
+def mySobelX(image):
+    operatorX = np.array(([[1, 0, 1], [2, 0, -2], [1, 0, -1]]), np.int8)
+    gradX = cv2.filter2D(src=image, kernel=operatorX, ddepth=-1).astype(np.uint8).clip(0, 255)
+    return gradX
+
+def mySobelY(image):
+    operatorY = np.array(([[1, 2, 1], [0, 0, 0], [-1, -2, -1]]), np.int8)
+    gradY = cv2.filter2D(src=image, kernel=operatorY, ddepth=-1).astype(np.uint8).clip(0, 255)
+    return gradY
+
+
 def paintLayer(canvas, refImage, brushSize, fg=1):
     # canvas : image with single color
     # refImage : blurred source image
@@ -23,8 +34,10 @@ def paintLayer(canvas, refImage, brushSize, fg=1):
     diffImage = difference(canvas, refImage)
     # Calculate gradient
     gray = grayScale(refImage)
-    gradX = cv2.Sobel(gray, -1, 1, 0, ksize=3)
-    gradY = cv2.Sobel(gray, -1, 0, 1, ksize=3)
+    gradX = mySobelX(gray)
+    gradY = mySobelY(gray)
+    # gradX = cv2.Sobel(gray, -1, 1, 0, ksize=3)
+    # gradY = cv2.Sobel(gray, -1, 0, 1, ksize=3)
     gradM = (abs(gradX) + abs(gradY)) * 0.25
 
     height, width, _ = refImage.shape
@@ -104,9 +117,9 @@ def difference(canvas, refImage):
     # diff_ch0 = (canvas[:, :, 0] - refImage[:, :, 0]) ** 2
     # diff_ch1 = (canvas[:, :, 1] - refImage[:, :, 1]) ** 2
     # diff_ch2 = (canvas[:, :, 2] - refImage[:, :, 2]) ** 2
-    diff_ch0 = np.array(abs(canvas[0] - refImage[:, :, 0]), dtype = 'int64')
-    diff_ch1 = np.array(abs(canvas[1] - refImage[:, :, 1]), dtype = 'int64')
-    diff_ch2 = np.array(abs(canvas[2] - refImage[:, :, 2]), dtype = 'int64')
+    diff_ch0 = np.array(abs(canvas[0] - refImage[:, :, 0])).astype(np.uint8)
+    diff_ch1 = np.array(abs(canvas[1] - refImage[:, :, 1])).astype(np.uint8)
+    diff_ch2 = np.array(abs(canvas[2] - refImage[:, :, 2])).astype(np.uint8)
     # return (diff_ch0 + diff_ch1 + diff_ch2) ** 0.5
     return (diff_ch0 + diff_ch1 + diff_ch2)
 
