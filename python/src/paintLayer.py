@@ -9,7 +9,7 @@ from estimate import *
 
 
 def grayScale(image):
-    gray = np.rint(image[:, :, 0] * 0.125 + image[:, :, 1] * 0.75 + image[0, 0, 2] * 0.5).clip(0, 255)
+    gray = ((image[:, :, 0] * 114 + image[:, :, 1] * 587 + image[0, 0, 2] * 229 + 500) / 1000).astype(np.uint8).clip(0, 255)
     return gray
 
 
@@ -22,7 +22,7 @@ def paintLayer(canvas, refImage, brushSize, fg=1):
     # Calculate difference
     diffImage = difference(canvas, refImage)
     # Calculate gradient
-    gray = cv2.cvtColor(refImage, cv2.COLOR_BGR2GRAY)    
+    gray = grayScale(refImage)
     gradX = cv2.Sobel(gray, -1, 1, 0, ksize=3)
     gradY = cv2.Sobel(gray, -1, 0, 1, ksize=3)
     gradM = (abs(gradX) + abs(gradY)) * 0.25
