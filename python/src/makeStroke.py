@@ -5,7 +5,7 @@ from estimate import *
 
 
 
-def makeStroke(R, x0, y0, x, y, refColor, canvas, gradX, gradY, gradM, strokeLen, dxF, dyF, strokeColor):
+def makeStroke(R, x0, y0, x, y, refColor, canvas, gradX_xy, gradY_xy, gradM_xy, strokeLen, dxF, dyF, strokeColor):
     # x0, y0 : initial image coordinate
     # gradX, gradY : gradient direction
     # gradM : gradient magnitude
@@ -34,15 +34,15 @@ def makeStroke(R, x0, y0, x, y, refColor, canvas, gradX, gradY, gradM, strokeLen
                 ) < abs(int(refColor[2]) - int(strokeColor[2]))
     diffColor = (diffR and diffG and diffB)
     # returns stroke if refColor difference exceeded
-    if (strokeLen > minLen and diffColor) or gradM[x, y] == 0 or strokeLen == maxLen:
+    if (strokeLen > minLen and diffColor) or gradM_xy == 0 or strokeLen == maxLen:
         # print("break 3")
         finish = True
     else:
     # if gradM[x, y] == 0:  # returns if gradient zero
     #     finish = True
     # normal gradient to stroke path
-        dx = -gradY[x, y]
-        dy = gradX[x, y]
+        dx = -gradY_xy
+        dy = gradX_xy
         if (dxF * dx + dyF * dy < 0):  # ensures positve normal gradient
             dx = -dx
             dy = -dy

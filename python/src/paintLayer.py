@@ -116,8 +116,11 @@ def paintLayer(canvas, refImage, brushSize, fg=1):
                         finish = True
                     else:
                         refColor = refImage[x, y]
+                        gradX_xy = gradX[x,y]
+                        gradY_xy = gradY[x,y]
+                        gradM_xy = gradM[x,y]
                         stroke, dxF, dyF, strokeLen, finish = makeStroke(
-                        brushSize, x_0, y_0, x, y, refColor, canvas, gradX, gradY, gradM, strokeLen, dxF, dyF, strokeColor)
+                        brushSize, x_0, y_0, x, y, refColor, canvas, gradX_xy, gradY_xy, gradM_xy, strokeLen, dxF, dyF, strokeColor)
                         x = stroke[0]
                         y = stroke[1]
                 # return gradM
