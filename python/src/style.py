@@ -17,7 +17,7 @@
 # A classic parameter set is the Impressionist style: T = 50, fg = 1, 
 # fs = 0.5, fc = 1, maxLen = 16, minLen = 4, brushR = [8,4,2]
 
-T      = 50
+T      = 0
 fg     = 1
 fs     = 0.5
 fc     = 1

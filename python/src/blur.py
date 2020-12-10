@@ -4,7 +4,7 @@ import numpy as np
 from style import *
 
 
-def blur(sourceImg, brush):
+def blur(sourceImg):
     # sourceImg : origninal image, type: nparray
     # brush : brush size
     # blurImage : image after blurring

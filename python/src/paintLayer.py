@@ -9,7 +9,8 @@ from estimate import *
 
 
 def grayScale(image):
-    gray = ((image[:, :, 0] * 114 + image[:, :, 1] * 587 + image[0, 0, 2] * 229 + 500) / 1000).astype(np.uint8).clip(0, 255)
+    # gray = ((image[:, :, 0] * 114 + image[:, :, 1] * 587 + image[0, 0, 2] * 229 + 500) / 1000).astype(np.uint8).clip(0, 255)
+    gray = ((image[:, :, 0] * 128 + image[:, :, 1] * (512+64) + image[0, 0, 2] * 256 + 500) / 1024).astype(np.uint8).clip(0, 255)
     return gray
 
 
@@ -46,16 +47,16 @@ def paintLayer(canvas, refImage, brushSize, fg=1):
     print('grid =', grid)
     print("x range: 0 ~", height - grid + 1)
     print("y range: 0 ~", width - grid + 1)
-    xorder = np.arange(grid, height - grid + 1, grid)
-    yorder = np.arange(grid, width - grid + 1, grid)
+    xorder = np.arange(grid+2, height - grid - 1, grid)
+    yorder = np.arange(grid+2, width - grid - 1, grid)
     np.random.seed(87)
     np.random.shuffle(xorder)
     np.random.shuffle(yorder)
     # print("xorder:", xorder)
     for x0 in list(xorder):
         for y0 in list(yorder):
-            gridRegion = diffImage[x0 - grid // 2 + 1: x0 + grid //
-                                   2 + 1, y0 - grid // 2 + 1: y0 + grid // 2 + 1]
+            gridRegion = diffImage[x0 - grid // 2: x0 + grid //
+                                   2 + 2, y0 - grid // 2: y0 + grid // 2 + 2]
             gridErr = np.sum(gridRegion) / (grid ** 2)
 
             # print(gridRegion)
@@ -63,8 +64,10 @@ def paintLayer(canvas, refImage, brushSize, fg=1):
             if gridErr > T:
                 ind = np.unravel_index(
                     np.argmax(gridRegion, axis=None), gridRegion.shape)
-                x = ind[0] + x0
-                y = ind[1] + y0
+                x_0 = ind[0] + x0
+                y_0 = ind[1] + y0
+                x = x_0
+                y = y_0
                 # print("x, y:", x, y)
                 dxF, dyF, strokeLen, finish = 0, 0, 0, 0 
                 strokeColor = refImage[x, y]
@@ -105,7 +108,7 @@ def paintLayer(canvas, refImage, brushSize, fg=1):
                         layer[x - tipX: x + tipX + 1, y - tipY: y + tipY + 1, 0: 3] \
                             = area + brush * clean
                     stroke, dxF, dyF, strokeLen, finish = makeStroke(
-                        brushSize, x, y, refImage, canvas, gradX, gradY, gradM, strokeLen, dxF, dyF, strokeColor)
+                        brushSize, x_0, y_0, x, y, x0, y0, refImage, canvas, gradX, gradY, gradM, strokeLen, dxF, dyF, strokeColor)
                     x = stroke[0]
                     y = stroke[1]
                 # return gradM

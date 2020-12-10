@@ -5,21 +5,21 @@ from estimate import *
 
 
 
-def makeStroke(R, x0, y0, refImage, canvas, gradX, gradY, gradM, strokeLen, dxF, dyF, strokeColor):
+def makeStroke(R, x0, y0, x, y, center_x, center_y, refImage, canvas, gradX, gradY, gradM, strokeLen, dxF, dyF, strokeColor):
     # x0, y0 : initial image coordinate
     # gradX, gradY : gradient direction
     # gradM : gradient magnitude
     
     # strokeColor = refImage[x0, y0]
-    x = x0
-    y = y0
+    # x = x0
+    # y = y0
     # dxF = 0  # final gradient change
     # dyF = 0
     finish = False
 
     # for i in range(0, maxLen):  # stroke is limited by the maximum length
     # coordinate must be within image dimensions
-    if x < 0 or y < 0 or x >= refImage.shape[0] or y >= refImage.shape[1]:
+    if x < center_x-4 or x < 0 or y < 0 or y < center_y - 4 or x >= refImage.shape[0] or x > center_x + 5 or y >= refImage.shape[1] or y > center_y + 5:
         finish = True
         # print("output of range")
     else:

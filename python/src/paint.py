@@ -8,11 +8,12 @@ def paint(sourceImg, brushR):
     # Empty painting
     oilImg = np.zeros(sourceImg.shape)
     # Paint the image with multiple brushes
+    # Blur original image
+    refImage = blur(sourceImg)
     for brush in sorted(brushR, reverse=True):
         # Empty canvas with single color
         canvas = C
-        # Blur original image
-        refImage = blur(sourceImg, brush)
+        
         # Paint a layer
         layer = paintLayer(canvas, refImage, brush)
 
