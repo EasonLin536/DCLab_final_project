@@ -9,18 +9,22 @@ from estimate import *
 
 
 def grayScale(image):
-    gray = ((image[:, :, 0] * 114 + image[:, :, 1] * 587 + image[0, 0, 2] * 229 + 500) / 1000).astype(np.uint8).clip(0, 255)
+    gray = ((image[:, :, 0] * 114 + image[:, :, 1] * 587 + image[0,
+                                                                 0, 2] * 229 + 500) / 1000).astype(np.uint8).clip(0, 255)
     return gray
 
 
 def mySobelX(image):
     operatorX = np.array(([[1, 0, 1], [2, 0, -2], [1, 0, -1]]), np.int8)
-    gradX = cv2.filter2D(src=image, kernel=operatorX, ddepth=-1).astype(np.uint8).clip(0, 255)
+    gradX = cv2.filter2D(src=image, kernel=operatorX,
+                         ddepth=-1).astype(np.uint8).clip(0, 255)
     return gradX
+
 
 def mySobelY(image):
     operatorY = np.array(([[1, 2, 1], [0, 0, 0], [-1, -2, -1]]), np.int8)
-    gradY = cv2.filter2D(src=image, kernel=operatorY, ddepth=-1).astype(np.uint8).clip(0, 255)
+    gradY = cv2.filter2D(src=image, kernel=operatorY,
+                         ddepth=-1).astype(np.uint8).clip(0, 255)
     return gradY
 
 
@@ -66,7 +70,7 @@ def paintLayer(canvas, refImage, brushSize, fg=1):
                 x = ind[0] + x0
                 y = ind[1] + y0
                 # print("x, y:", x, y)
-                dxF, dyF, strokeLen, finish = 0, 0, 0, 0 
+                dxF, dyF, strokeLen, finish = 0, 0, 0, 0
                 strokeColor = refImage[x, y]
                 tip = circle(brushSize)
                 tipX = int(np.floor(tip.shape[1]/2))
@@ -97,15 +101,20 @@ def paintLayer(canvas, refImage, brushSize, fg=1):
                         # print("yMin:", yMin)
                         # print("tipX:", tipX)
                         # print("tipY:", tipY)
-                        area = layer[x - tipX: x + tipX + 1, y - tipY: y + tipY + 1, 0: 3]
+                        area = layer[x - tipX: x + tipX +
+                                     1, y - tipY: y + tipY + 1, 0: 3]
                         # print("area", area.shape)
                         # print("layer:", layer.shape)
                         painted = (area * brush != 0)
                         clean = (painted == 0)
                         layer[x - tipX: x + tipX + 1, y - tipY: y + tipY + 1, 0: 3] \
                             = area + brush * clean
-                    stroke, dxF, dyF, strokeLen, finish = makeStroke(
-                        brushSize, x, y, refImage, canvas, gradX, gradY, gradM, strokeLen, dxF, dyF, strokeColor)
+                    if x < 0 or y < 0 or x >= refImage.shape[0] or y >= refImage.shape[1]:
+                        finish = 1
+                    else:
+                        refColor = refImage[x, y]
+                        stroke, dxF, dyF, strokeLen, finish = makeStroke(
+                            brushSize, x, y, refColor, canvas, gradX, gradY, gradM, strokeLen, dxF, dyF, strokeColor)
                     x = stroke[0]
                     y = stroke[1]
                 # return gradM
