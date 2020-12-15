@@ -20,9 +20,9 @@ parameter brushR    =   {5'd8, 5'd4, 5'd2};
 logic   [7:0]   OriginRed, OriginGreen, OriginBlue;
 logic   [23:0]  OriginPicture;
 
-assign OriginRed     = i_sram_data_1[9:2];
+assign OriginRed     = i_sram_data_2[9:2];
 assign OriginGreen   = {i_sram_data_1[14:10], i_sram_data_2[14:12]};
-assign OriginBlue    = i_sram_data_2[9:2];
+assign OriginBlue    = i_sram_data_1[9:2];
 assign OriginPicture = {OriginRed, OriginGreen, OriginBlue};
 
 assign o_display_Red   = {OriginPicture[23:16], 2'b00};
