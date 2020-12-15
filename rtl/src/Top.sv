@@ -15,7 +15,7 @@ parameter fs        =   0.5;
 parameter fc        =   1;
 parameter maxLen    =   16;
 parameter minLen    =   4;
-parameter brushR    =   {4'd8, 4'd4, 4'd2};
+parameter brushR    =   {5'd8, 5'd4, 5'd2};
 
 logic   [7:0]   OriginRed, OriginGreen, OriginBlue;
 logic   [23:0]  OriginPicture;

@@ -23,56 +23,72 @@ module blur (
 parameter KWIDTH = 5; // kernel width
 parameter KHEIGHT = 5; // kernel height
 
-// pixel registers
-logic [7:0] R_pixel_r [0:24];
-logic [7:0] R_pixel_w [0:24];
-logic [7:0] G_pixel_r [0:24];
-logic [7:0] G_pixel_w [0:24];
-logic [7:0] B_pixel_r [0:24];
-logic [7:0] B_pixel_w [0:24];
-
 parameter RED = 0;
 parameter GREEN = 1;
 parameter BLUE = 2;
 
-// load pixel index
-logic [1:0] color_r, color_w;
+// pixel registers
+logic  [7:0] R_pixel_r [0:24];
+logic  [7:0] R_pixel_w [0:24];
+logic  [7:0] G_pixel_r [0:24];
+logic  [7:0] G_pixel_w [0:24];
+logic  [7:0] B_pixel_r [0:24];
+logic  [7:0] B_pixel_w [0:24];
+// load pixel color
+logic  [1:0] load_color_r, load_color_w;
+// operate pixel color
+logic  [1:0] op_color_r, op_color_w;
+// submodules
+logic  [7:0] x [0:24];
+logic [14:0] sum [0:4];
+logic  [7:0] gau;
 // output register
-logic       o_valid_r, o_valid_w;
-logic [7:0] o_pixel_r, o_pixel_w;
+logic        o_valid_r, o_valid_w;
+logic  [7:0] o_pixel_r, o_pixel_w;
+// for loop
+integer i, j, k;
 
 assign o_valid = o_valid_r;
 assign o_pixel = o_pixel_r;
+assign o_pixel_w = gau;
 
+filter_col_0 fil0 ( x[0],  x[1],  x[2],  x[3],  x[4],  sum[0] );
+filter_col_1 fil1 ( x[5],  x[6],  x[7],  x[8],  x[9],  sum[1] );
+filter_col_2 fil2 ( x[10], x[11], x[12], x[13], x[14], sum[2] );
+filter_col_1 fil3 ( x[15], x[16], x[17], x[18], x[19], sum[3] );
+filter_col_0 fil4 ( x[20], x[21], x[22], x[23], x[24], sum[4] );
+sum_n_divide snd  ( sum[0], sum[1], sum[2], sum[3], sum[4], gau );
+
+// load pixel into registers color by color
 always_comb begin
     // initialize
-    color_w = color_r;
+    load_color_w = load_color_r;
     R_pixel_w = R_pixel_r;
     G_pixel_w = G_pixel_r;
     B_pixel_w = B_pixel_r;
     
     if (i_valid) begin
-        case (color_r)
+        case (load_color_r)
             RED: begin
-                color_w = GREEN;
+                load_color_w = GREEN;
                 for (i=1;i<25;i=i+1) begin
-                    R_pixel_w[i-1] = R_pixel_r[i]
+                    R_pixel_w[i-1] = R_pixel_r[i];
                 end
                 R_pixel_w[24] = i_pixel;
             end
 
             GREEN: begin
-                color_w = BLUE;
+                load_color_w = BLUE;
                 for (i=1;i<25;i=i+1) begin
-                    G_pixel_w[i-1] = G_pixel_r[i]
+                    G_pixel_w[i-1] = G_pixel_r[i];
                 end
                 G_pixel_w[24] = i_pixel;
             end
 
             BLUE: begin
-                color_w = RED;
+                load_color_w = RED;
                 for (i=1;i<25;i=i+1) begin
-                    B_pixel_w[i-1] = B_pixel_r[i]
+                    B_pixel_w[i-1] = B_pixel_r[i];
                 end
                 B_pixel_w[24] = i_pixel;
             end            
@@ -80,20 +96,54 @@ always_comb begin
     end
 end
 
+// choose color image to calculate output
+always_comb begin
+	// initialize
+	for (k=0;k<25;k=k+1) begin
+		x[k] = 0;
+	end
+	op_color_w = op_color_r;
+
+	case (op_color_r)
+		RED: begin
+			op_color_w = GREEN;
+			for (k=0;k<25;k=k+1) begin
+				x[k] = R_pixel_r[k];
+			end
+		end
+		GREEN: begin
+			op_color_w = BLUE;
+			for (k=0;k<25;k=k+1) begin
+				x[k] = G_pixel_r[k];
+			end
+		end
+		BLUE: begin
+			op_color_w = RED;
+			for (k=0;k<25;k=k+1) begin
+				x[k] = B_pixel_r[k];
+			end
+		end
+	endcase
+end
+
 always_ff @(posedge i_clk or negedge i_rst_n) begin
 	if (!i_rst_n) begin
-        R_pixel_r <= 0;
-	    G_pixel_r <= 0;
-	    B_pixel_r <= 0;
-        color_r <= 0;
+		for (j=0;j<25;j=j+1) begin
+			R_pixel_r[j] <= 0;
+			G_pixel_r[j] <= 0;
+			B_pixel_r[j] <= 0;
+		end
+        load_color_r <= 0;
         o_valid_r <= 0;
         o_pixel_r <= 0;
     end
     else begin
-    	R_pixel_r <= R_pixel_w;
-	    G_pixel_r <= G_pixel_w;
-	    B_pixel_r <= B_pixel_w; 
-        color_r <= color_w;
+    	for (j=0;j<25;j=j+1) begin
+			R_pixel_r[j] <= R_pixel_w[j];
+			G_pixel_r[j] <= G_pixel_w[j];
+			B_pixel_r[j] <= B_pixel_w[j];
+		end
+        load_color_r <= load_color_w;
         o_valid_r <= o_valid_w;
         o_pixel_r <= o_pixel_w;
     end
@@ -132,20 +182,20 @@ module filter_col_0 (
 endmodule
 
 module filter_col_1 (
-    input  [7:0] pixel_0,
-	input  [7:0] pixel_1,
-	input  [7:0] pixel_2,
-	input  [7:0] pixel_3,
-	input  [7:0] pixel_4,
+    input   [7:0] pixel_0,
+	input   [7:0] pixel_1,
+	input   [7:0] pixel_2,
+	input   [7:0] pixel_3,
+	input   [7:0] pixel_4,
 	output [14:0] sum
 );
 
-	logic   [11:0] extend_1;
-	logic   [11:0] extend_2;
-	logic   [11:0] extend_3;
-	logic   [11:0] extend_4;
-	logic   [11:0] extend_5;
-	logic   [11:0] w0, w1, w2, w3, w4, w5;
+	logic [11:0] extend_1;
+	logic [11:0] extend_2;
+	logic [11:0] extend_3;
+	logic [11:0] extend_4;
+	logic [11:0] extend_5;
+	logic [11:0] w0, w1, w2, w3, w4, w5;
 
 	assign extend_1 = { 4'b0, pixel_0 };
 	assign extend_2 = { 4'b0, pixel_1 };
@@ -164,20 +214,20 @@ module filter_col_1 (
 endmodule
 
 module filter_col_2 (
-    input  [7:0] pixel_0,
-	input  [7:0] pixel_1,
-	input  [7:0] pixel_2,
-	input  [7:0] pixel_3,
-	input  [7:0] pixel_4,
+    input   [7:0] pixel_0,
+	input   [7:0] pixel_1,
+	input   [7:0] pixel_2,
+	input   [7:0] pixel_3,
+	input   [7:0] pixel_4,
 	output [14:0] sum
 );
 
-	logic   [11:0] extend_1;
-	logic   [11:0] extend_2;
-	logic   [11:0] extend_3;
-	logic   [11:0] extend_4;
-	logic   [11:0] extend_5;
-	logic   [11:0] w0, w1, w2, w3, w4, w5, w6, w7;
+	logic [11:0] extend_1;
+	logic [11:0] extend_2;
+	logic [11:0] extend_3;
+	logic [11:0] extend_4;
+	logic [11:0] extend_5;
+	logic [11:0] w0, w1, w2, w3, w4, w5, w6, w7;
 
 	assign extend_1 = { 4'b0, pixel_0 };
 	assign extend_2 = { 4'b0, pixel_1 };
@@ -203,8 +253,8 @@ module sum_n_divide (
     input [14:0] in2,
     input [14:0] in3,
     input [14:0] in4,
-    input [14:0] in5
-	output [7:0] out;
+    input [14:0] in5,
+	output [7:0] out
 );
 
 	logic [17:0] w0, w1, w2, w3, w4, w5, w6;

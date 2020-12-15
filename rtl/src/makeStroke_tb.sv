@@ -4,20 +4,19 @@
 
 module tb();
     logic clk,rst;
-    logic [3:0] a,b,c;
-    logic signed [4:0] d;
+    logic [3:0] a,b,c,d;
     initial begin
         clk=1;
         rst=1;
         #(`CYCLE*0.2) rst = 1'b0;
         #(`CYCLE*1.5) rst = 1'b1;
         a=4'd2;
-        b=4'd4;
-        c=4'd5;
-        d=a-b;
-        $display("%d-%d=%d",a,b,d);
-        $display("%b-%b=%b",a,b,d);
+        b=4'd5;
+        c=4'd6;
+        d=4'd4;
+        $display("--- TEST diff ---");
         $display("diff:%b",diff(a,b,c));
+        $display("diff:%b",diff(a,b,d));
 
     end
 

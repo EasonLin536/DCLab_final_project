@@ -3,6 +3,7 @@ module paintLayer(
     input           rst_n,
     input   [23:0]  data
 );
+<<<<<<< HEAD
 //===== for find max ====
 logic   [23:0]  result_0[0:7][0:3];
 logic   [2:0]   max_0[0:7][0:3];
@@ -16,6 +17,13 @@ logic   [23:0]  result_4[0:1];
 logic   [2:0]   max_4[0:1];
 logic   [23:0]  result_5;
 logic   [2:0]   max_5;
+=======
+logic   [23:0]  gridRegion[0:7][0:7];
+logic   [23:0]  result_0[0:7][0:3];
+logic   [2:0]   max_0[0:7][0:3];
+logic   [2:0]   max_x, max_y;
+
+>>>>>>> dbce1c94c3370556f990bda303707686093feedb
 genvar i, j;
 generate
     for (i = 0; i < 8; i++) begin
@@ -25,6 +33,7 @@ generate
         end
     end
 endgenerate
+<<<<<<< HEAD
 generate
     for (i = 0; i < 8; i++) begin
         for (j = 0; j < 2; j++) begin
@@ -71,4 +80,6 @@ always_ff @(posedge i_clk or negedge i_rst_n) begin
         
     end
 end
+=======
+>>>>>>> dbce1c94c3370556f990bda303707686093feedb
 endmodule
