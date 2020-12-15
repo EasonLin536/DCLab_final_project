@@ -467,6 +467,12 @@ wire	[9:0]	oVGA_B;   				//	VGA Blue[9:0]
 //power on start
 wire             auto_start;
 //=======================================================
+//	For Top Design
+//=======================================================
+wire 	[9:0]	process_Red;
+wire 	[9:0]	process_Green;
+wire 	[9:0]	process_Blue;
+//=======================================================
 //  Structural coding
 //=======================================================
 // D5M
@@ -647,11 +653,38 @@ I2C_CCD_Config 		u8	(	//	Host Side
 							.I2C_SDAT(D5M_SDATA)
 						);
 //VGA DISPLAY
+TOP 				Top (	// SDRAM Side
+							.i_clk(sdram_ctrl_clk),
+							.i_rst_n(KEY[0]),
+							.i_sram_data_1(Read_DATA1),
+							.i_sram_data_2(Read_DATA2),
+							.o_display_Red(process_Red),
+							.o_display_Green(process_Green),
+							.o_display_Blue(process_Blue),
+						);
+// VGA_Controller		u1	(	//	Host Side
+// 							.oRequest(Read),
+// 							.iRed(Read_DATA2[9:0]),
+// 							.iGreen({Read_DATA1[14:10],Read_DATA2[14:10]}),
+// 							.iBlue(Read_DATA1[9:0]),
+// 							//	VGA Side
+// 							.oVGA_R(oVGA_R),
+// 							.oVGA_G(oVGA_G),
+// 							.oVGA_B(oVGA_B),
+// 							.oVGA_H_SYNC(VGA_HS),
+// 							.oVGA_V_SYNC(VGA_VS),
+// 							.oVGA_SYNC(VGA_SYNC_N),
+// 							.oVGA_BLANK(VGA_BLANK_N),
+// 							//	Control Signal
+// 							.iCLK(VGA_CTRL_CLK),
+// 							.iRST_N(DLY_RST_2),
+// 							.iZOOM_MODE_SW(SW[16])
+// 						);
 VGA_Controller		u1	(	//	Host Side
 							.oRequest(Read),
-							.iRed(Read_DATA2[9:0]),
-							.iGreen({Read_DATA1[14:10],Read_DATA2[14:10]}),
-							.iBlue(Read_DATA1[9:0]),
+							.iRed(process_Red),
+							.iGreen(process_Green),
+							.iBlue(process_Blue),
 							//	VGA Side
 							.oVGA_R(oVGA_R),
 							.oVGA_G(oVGA_G),
