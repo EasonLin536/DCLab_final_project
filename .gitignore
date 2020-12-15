@@ -6,6 +6,7 @@ python/venv/
 *.log
 *verdiLog
 *vfastLog
+<<<<<<< HEAD
 *.jpg
 DE2_115_CAMERA/db/
 DE2_115_CAMERA/demo_batch/
@@ -26,3 +27,6 @@ DE2_115_CAMERA/DE2_115_CAMERA.sof
 DE2_115_CAMERA/DE2_115_CAMERA.sta.*
 DE2_115_CAMERA/PLLJ_PLLSPE_INFO.txt
 DE2_115_CAMERA/stp1.stp
+=======
+*.jpg
+>>>>>>> 8096d89fa3ee7d30ab3201d6d5d35404fc5e11b6
