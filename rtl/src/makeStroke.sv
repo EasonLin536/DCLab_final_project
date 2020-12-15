@@ -8,11 +8,11 @@ module makeStroke (
     input   [9:0] y_i,
     input   [9:0] center_x_i,
     input   [9:0] center_y_i,
-    input   [8*8*24-1:0] refImage_i,  //8*8*24 array
+    input   [23:0] refColor_i,  //8*8*24 array
     input   [23:0] canvas_i,    // parameter(?)
-    input   [8*8*8-1:0] gradX_i,    // 8*8*8
-    input   [8*8*8-1:0] gradY_i,    // 8*8*8
-    input   [8*8*8-1:0] gradM_i,    // 8*8
+    input   [7:0] gradX_xy_i,
+    input   [7:0] gradY_xy_i,
+    input   [7:0] gradM_xy_i,
     input   [23:0] strokeColor_i,
 
     output  [9:0] x_o,
@@ -20,22 +20,42 @@ module makeStroke (
     output        finish
 );
 
-reg [9:0] strokeLen_w, strokeLen_r;
-reg [7:0] dxF_w, dyF_w, dxF_r, dyF_r;
-reg finish_w, finish_r;
+parameter minLen    =   4;
+parameter maxLen    =   16;
+
+
+logic [9:0] strokeLen_w, strokeLen_r;
+logic [7:0] dxF_w, dyF_w, dxF_r, dyF_r;
+logic finish_w, finish_r;
+
+logic diffColor;
 
 assign finish = finish_r;
 
-function [7:0] abs;
-    input [7:0] num_i;
+function diff;
+    input [7:0] a;
+    input [7:0] b;
+    input [7:0] c;
+    reg signed [8:0] tmp1, tmp2;
     begin
-        abs = (num_i[7]) ? (~num_i+1'b1) : num_i;
+        // diff = ((a>b) ? a-b : b-a) < ((a>c) ? a-c : c-a);
+        tmp1=a-b;
+        tmp2=a-c;
+        diff = (tmp1[8] ? (~tmp1+1) : tmp1) < (tmp2[8] ? (~tmp2+1) : tmp2);
     end
     
 endfunction
 
 always_comb begin
-    
+    diffColor = diff(refColor_i[23-:8],canvas_i[23-:8],strokeColor_i[23-:8]) 
+                && diff(refColor_i[15-:8],canvas_i[15-:8],strokeColor_i[15-:8]) 
+                && diff(refColor_i[7-:8],canvas_i[7-:8],strokeColor_i[7-:8]);
+    if((strokeLen_r > minLen && diffColor) || (strokeLen_r==maxLen)) begin // || gradM[x, y] == 0
+        finish_w = 1;
+    end
+    else begin
+
+    end
 end
 
 always_ff @(posedge i_clk or negedge i_rst_n) begin
