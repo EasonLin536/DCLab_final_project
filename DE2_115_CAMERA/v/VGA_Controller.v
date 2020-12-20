@@ -53,6 +53,8 @@ module	VGA_Controller(	//	Host Side
 						oVGA_V_SYNC,
 						oVGA_SYNC,
 						oVGA_BLANK,
+						o_H_Cont,
+						o_V_Cont,
 
 						//	Control Signal
 						iCLK,
@@ -131,6 +133,15 @@ wire	[12:0]		v_mask;
 assign v_mask = 13'd0 ;//iZOOM_MODE_SW ? 13'd0 : 13'd26;
 
 ////////////////////////////////////////////////////////
+//=======================================================
+//	For Top Design
+//=======================================================
+wire	[12:0]		o_H_Cont;
+wire	[12:0]		o_V_Cont;
+
+assign o_H_Cont = H_Cont;
+assign o_V_Cont = V_Cont;
+//=======================================================
 
 assign	mVGA_BLANK	=	mVGA_H_SYNC & mVGA_V_SYNC;
 assign	mVGA_SYNC	=	1'b0;

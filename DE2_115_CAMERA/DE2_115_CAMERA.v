@@ -472,6 +472,31 @@ wire             auto_start;
 wire 	[9:0]	process_Red;
 wire 	[9:0]	process_Green;
 wire 	[9:0]	process_Blue;
+wire			top_ccd_pause;
+
+wire 	[19:0]	s_addr;
+wire			s_cen;
+wire	[15:0] 	s_dq;
+wire			s_lbn;
+wire			s_oen;
+wire 			s_ubn;
+wire 			s_wen;
+
+wire 	[12:0]	o_H_Cont;
+wire 	[12:0]	o_V_Cont;
+
+assign SRAM_ADDR = s_addr;
+assign SRAM_CE_N = s_cen;
+assign SRAM_DQ   = s_dq;
+assign SRAM_LB_N = s_lbn;
+assign SRAM_OE_N = s_oen;
+assign SRAM_UB_N = s_ubn;
+assign SRAM_WE_N = s_wen;
+
+assign s_cen = 1'b0;
+assign s_oen = 1'b0;
+assign s_lbn = 1'b0;
+assign s_ubn = 1'b0;
 //=======================================================
 //  Structural coding
 //=======================================================
@@ -518,7 +543,7 @@ CCD_Capture			u3	(	.oDATA(mCCD_DATA),
 							.iFVAL(rCCD_FVAL),
 							.iLVAL(rCCD_LVAL),
 							.iSTART(!KEY[3]|auto_start),
-							.iEND(!KEY[2]),
+							.iEND(!KEY[2]|top_ccd_pause),
 							.iCLK(~D5M_PIXLCLK),
 							.iRST(DLY_RST_2)
 						);
@@ -656,11 +681,17 @@ I2C_CCD_Config 		u8	(	//	Host Side
 TOP 				Top (	// SDRAM Side
 							.i_clk(sdram_ctrl_clk),
 							.i_rst_n(KEY[0]),
-							.i_sram_data_1(Read_DATA1),
-							.i_sram_data_2(Read_DATA2),
+							.i_sdram_data_1(Read_DATA1),
+							.i_sdram_data_2(Read_DATA2),
+							.i_H_Cont(H_Cont),
+							.i_V_Cont(V_Cont),
+							.i_s_addr(s_addr),
+							.i_s_wen(s_wen),
+							.io_s_dq(s_dq),
 							.o_display_Red(process_Red),
 							.o_display_Green(process_Green),
 							.o_display_Blue(process_Blue),
+							.o_CCD_pause(top_ccd_pause)
 						);
 // VGA_Controller		u1	(	//	Host Side
 // 							.oRequest(Read),
@@ -693,6 +724,8 @@ VGA_Controller		u1	(	//	Host Side
 							.oVGA_V_SYNC(VGA_VS),
 							.oVGA_SYNC(VGA_SYNC_N),
 							.oVGA_BLANK(VGA_BLANK_N),
+							.o_H_Cont(H_Cont),
+							.o_V_Cont(V_Cont),
 							//	Control Signal
 							.iCLK(VGA_CTRL_CLK),
 							.iRST_N(DLY_RST_2),
