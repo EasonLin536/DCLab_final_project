@@ -57,6 +57,7 @@ def paintLayer(canvas, refImage, brushSize, fg=1):
     np.random.shuffle(xorder)
     np.random.shuffle(yorder)
     # print("xorder:", xorder)
+    kk = 0
     for x0 in list(xorder):
         for y0 in list(yorder):
             gridRegion = diffImage[x0 - grid // 2: x0 + grid //
@@ -112,9 +113,16 @@ def paintLayer(canvas, refImage, brushSize, fg=1):
                         clean = (painted == 0)
                         layer[x - tipX: x + tipX + 1, y - tipY: y + tipY + 1, 0: 3] \
                             = area + brush * clean
+                    
                     if x < x0-4 or x < 0 or y < 0 or y < y0 - 4 or x >= refImage.shape[0] or x > x0 + 5 or y >= refImage.shape[1] or y > y0 + 5:
                         finish = True
                     else:
+                        # if kk==0:
+                        print("input")
+                        print(brushSize, x_0, y_0, x, y, refColor, canvas, gradX_xy, gradY_xy, gradM_xy, strokeLen, dxF, dyF, strokeColor)
+                        print("output")
+                        print(stroke, dxF, dyF, strokeLen, finish)
+                            # kk=1
                         refColor = refImage[x, y]
                         gradX_xy = gradX[x,y]
                         gradY_xy = gradY[x,y]

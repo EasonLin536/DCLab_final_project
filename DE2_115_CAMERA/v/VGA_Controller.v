@@ -136,8 +136,8 @@ assign v_mask = 13'd0 ;//iZOOM_MODE_SW ? 13'd0 : 13'd26;
 //=======================================================
 //	For Top Design
 //=======================================================
-wire	[12:0]		o_H_Cont;
-wire	[12:0]		o_V_Cont;
+output	[12:0]		o_H_Cont;
+output	[12:0]		o_V_Cont;
 
 assign o_H_Cont = H_Cont;
 assign o_V_Cont = V_Cont;
