@@ -477,6 +477,7 @@ wire			top_ccd_pause;
 wire 	[19:0]	s_addr;
 wire			s_cen;
 wire	[15:0] 	s_dq;
+wire	[15:0] 	s_data;
 wire			s_lbn;
 wire			s_oen;
 wire 			s_ubn;
@@ -487,12 +488,13 @@ wire 	[12:0]	V_Cont;
 
 assign SRAM_ADDR = s_addr;
 assign SRAM_CE_N = s_cen;
-assign SRAM_DQ   = s_dq;
+assign SRAM_DQ   = (s_wen)? 16'dz:s_dq;
 assign SRAM_LB_N = s_lbn;
 assign SRAM_OE_N = s_oen;
 assign SRAM_UB_N = s_ubn;
 assign SRAM_WE_N = s_wen;
 
+assign s_data = (s_wen)? SRAM_DQ:16'd0;
 assign s_cen = 1'b0;
 assign s_oen = 1'b0;
 assign s_lbn = 1'b0;
@@ -679,16 +681,18 @@ I2C_CCD_Config 		u8	(	//	Host Side
 						);
 //VGA DISPLAY
 TOP 				Top (	// SDRAM Side
-							// .i_clk(sdram_ctrl_clk),
-							.i_clk(VGA_CLK),
+							.i_clk(sdram_ctrl_clk),
+							// .i_clk(D5M_XCLKIN),
+							// .i_clk(VGA_CLK),
 							.i_rst_n(KEY[0]),
 							.i_sdram_data_1(Read_DATA1),
 							.i_sdram_data_2(Read_DATA2),
 							// .i_H_Cont(H_Cont),
 							// .i_V_Cont(V_Cont),
-							.i_H_Cont(X_Cont),
-							.i_V_Cont(Y_Cont),
-							.io_s_dq(s_dq),
+							.i_H_Cont(H_Cont),
+							.i_V_Cont(V_Cont),
+							.i_s_data(s_data),
+							.o_s_data(s_dq),
 							.o_s_wen(s_wen),
 							.o_s_addr(s_addr),
 							.o_display_Red(process_Red),
