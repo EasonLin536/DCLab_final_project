@@ -55,6 +55,7 @@ module	VGA_Controller(	//	Host Side
 						oVGA_BLANK,
 						o_H_Cont,
 						o_V_Cont,
+						o_sdram_valid,
 
 						//	Control Signal
 						iCLK,
@@ -141,20 +142,43 @@ output	[12:0]		o_V_Cont;
 
 assign o_H_Cont = H_Cont;
 assign o_V_Cont = V_Cont;
+
+wire [9:0] red_Tmp, green_Tmp, blue_Tmp;
+
+parameter X_offset = 100;
+parameter Y_offset = 100;
+
+assign	mVGA_R = ( H_Cont>=X_START+X_offset && H_Cont<X_START+H_SYNC_ACT-X_offset &&
+				   V_Cont>=Y_START+v_mask+Y_offset && V_Cont<Y_START+V_SYNC_ACT-Y_offset )
+				   ? iRed : 0;
+assign	mVGA_G = ( H_Cont>=X_START+X_offset && H_Cont<X_START+H_SYNC_ACT-X_offset &&
+				   V_Cont>=Y_START+v_mask+Y_offset 	&& V_Cont<Y_START+V_SYNC_ACT-Y_offset )
+				   ? iGreen : 0;
+assign	mVGA_B = ( H_Cont>=X_START+X_offset && H_Cont<X_START+H_SYNC_ACT-X_offset &&
+				   V_Cont>=Y_START+v_mask+Y_offset 	&& V_Cont<Y_START+V_SYNC_ACT-Y_offset )
+				   ? iBlue : 0;
+
 //=======================================================
 
 assign	mVGA_BLANK	=	mVGA_H_SYNC & mVGA_V_SYNC;
 assign	mVGA_SYNC	=	1'b0;
 
-assign	mVGA_R	=	(	H_Cont>=X_START 	&& H_Cont<X_START+H_SYNC_ACT &&
+// assign	mVGA_R = ( H_Cont>=X_START && H_Cont<X_START+H_SYNC_ACT &&
+// 				   V_Cont>=Y_START+v_mask && V_Cont<Y_START+V_SYNC_ACT )
+// 				   ? iRed : 0;
+// assign	mVGA_G = ( H_Cont>=X_START && H_Cont<X_START+H_SYNC_ACT &&
+// 				   V_Cont>=Y_START+v_mask 	&& V_Cont<Y_START+V_SYNC_ACT )
+// 				   ? iGreen : 0;
+// assign	mVGA_B = ( H_Cont>=X_START && H_Cont<X_START+H_SYNC_ACT &&
+// 				   V_Cont>=Y_START+v_mask 	&& V_Cont<Y_START+V_SYNC_ACT )
+// 				   ? iBlue : 0;
+
+
+// added by eason
+output o_sdram_valid;
+assign o_sdram_valid = ( H_Cont>=X_START 	&& H_Cont<X_START+H_SYNC_ACT &&
 						V_Cont>=Y_START+v_mask 	&& V_Cont<Y_START+V_SYNC_ACT )
-						?	iRed	:	0;
-assign	mVGA_G	=	(	H_Cont>=X_START 	&& H_Cont<X_START+H_SYNC_ACT &&
-						V_Cont>=Y_START+v_mask 	&& V_Cont<Y_START+V_SYNC_ACT )
-						?	iGreen	:	0;
-assign	mVGA_B	=	(	H_Cont>=X_START 	&& H_Cont<X_START+H_SYNC_ACT &&
-						V_Cont>=Y_START+v_mask 	&& V_Cont<Y_START+V_SYNC_ACT )
-						?	iBlue	:	0;
+						? 1 : 0;
 
 always@(posedge iCLK or negedge iRST_N)
 	begin
