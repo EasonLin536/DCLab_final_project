@@ -54,25 +54,28 @@ logic   [12:0]  last_H_Cont_w, last_H_Cont_r;
 assign OriginRed     = i_sdram_data_2[9:0];
 assign OriginGreen   = { i_sdram_data_1[14:10], i_sdram_data_2[14:10] };
 assign OriginBlue    = i_sdram_data_1[9:0];
-assign OriginPicture = { OriginRed, OriginGreen, OriginBlue };
+// assign OriginPicture = { OriginRed, OriginGreen, OriginBlue };
 
-// assign o_display_Red   = { OriginPicture_r[14:10], 5'd00 };
-// assign o_display_Green = { OriginPicture_r[9:5],   5'd00 };
-// assign o_display_Blue  = { OriginPicture_r[4:0],   5'd00 };
-// assign o_display_Red   = {reduce_color[14:10], 5'b00};
-// assign o_display_Green = {reduce_color[9:5] , 5'b00};
-// assign o_display_Blue  = {reduce_color[4:0] , 5'b00};
 assign o_s_data = s_data_r;
 
+assign o_display_Red   = { OriginPicture_r[14:10], 5'd0 };
+assign o_display_Green = { OriginPicture_r[9:5],   5'd0 };
+assign o_display_Blue  = { OriginPicture_r[4:0],   5'd0 };
+
+// output entire reduced image
+// assign o_display_Red   = { reduce_color[14:10], 5'd0 };
+// assign o_display_Green = { reduce_color[9:5],   5'd0 };
+// assign o_display_Blue  = { reduce_color[4:0],   5'd0 };
+
 // output the reduced pixel from sdram in region
-// assign o_display_Red   = (i_H_Cont < 650 && i_H_Cont >= 300 && i_V_Cont < 400 && i_V_Cont >= 100)? { reduce_color[14:10], 5'b00 } : { 10'd500 };
-// assign o_display_Green = (i_H_Cont < 650 && i_H_Cont >= 300 && i_V_Cont < 400 && i_V_Cont >= 100)? { reduce_color[9:5],   5'b00 } : { 10'd500 };
-// assign o_display_Blue  = (i_H_Cont < 650 && i_H_Cont >= 300 && i_V_Cont < 400 && i_V_Cont >= 100)? { reduce_color[4:0],   5'b00 } : { 10'd500 };
+// assign o_display_Red   = (i_H_Cont < 650 && i_H_Cont >= 300 && i_V_Cont < 400 && i_V_Cont >= 100)? { reduce_color[14:10], 5'd0 } : { 10'd500 };
+// assign o_display_Green = (i_H_Cont < 650 && i_H_Cont >= 300 && i_V_Cont < 400 && i_V_Cont >= 100)? { reduce_color[9:5],   5'd0 } : { 10'd500 };
+// assign o_display_Blue  = (i_H_Cont < 650 && i_H_Cont >= 300 && i_V_Cont < 400 && i_V_Cont >= 100)? { reduce_color[4:0],   5'd0 } : { 10'd500 };
 
 // output the original pixel from sdram in region
-assign o_display_Red   = (i_H_Cont < 650 && i_H_Cont >= 300 && i_V_Cont < 400 && i_V_Cont >= 100)? { OriginRed   } : { 10'd500 };
-assign o_display_Green = (i_H_Cont < 650 && i_H_Cont >= 300 && i_V_Cont < 400 && i_V_Cont >= 100)? { OriginGreen } : { 10'd500 };
-assign o_display_Blue  = (i_H_Cont < 650 && i_H_Cont >= 300 && i_V_Cont < 400 && i_V_Cont >= 100)? { OriginBlue  } : { 10'd500 };
+// assign o_display_Red   = (i_H_Cont < 650 && i_H_Cont >= 300 && i_V_Cont < 400 && i_V_Cont >= 100)? { OriginRed   } : { 10'd500 };
+// assign o_display_Green = (i_H_Cont < 650 && i_H_Cont >= 300 && i_V_Cont < 400 && i_V_Cont >= 100)? { OriginGreen } : { 10'd500 };
+// assign o_display_Blue  = (i_H_Cont < 650 && i_H_Cont >= 300 && i_V_Cont < 400 && i_V_Cont >= 100)? { OriginBlue  } : { 10'd500 };
 
 assign o_s_wen = s_wen_r;
 assign o_s_addr = s_addr_r;
@@ -81,6 +84,11 @@ assign o_CCD_pause = ccd_pause_r;
 assign reduce_color = { i_sdram_data_2[9:5], i_sdram_data_1[14:10], i_sdram_data_1[9:5] };
 
 assign last_H_Cont_w = i_H_Cont;
+
+parameter X_cord = 144;
+parameter X_width = 640;
+parameter Y_cord = 35;
+parameter Y_height = 100;
 
 always_comb begin
     state_w = state_r;
@@ -91,31 +99,23 @@ always_comb begin
     ccd_pause_w = ccd_pause_r;
     cnt_w = cnt_r;
     
-    case(state_r)
+    case (state_r)
         S_IDLE1: begin
-            if (i_H_Cont == 300 && i_V_Cont == 100) begin
+            if (i_H_Cont == X_cord && i_V_Cont == Y_cord) begin
                 state_w = S_REC1;
                 s_wen_w = 0;
                 s_addr_w = 0;
                 s_data_w = { 1'b0, reduce_color };
-                
-                // if (last_H_Cont_r != i_H_Cont) begin
-                //     state_w = S_REC1;
-                //     s_wen_w = 0;
-                //     s_addr_w = 0;
-                //     s_data_w = { 1'b0, reduce_color };
-                // end
             end
         end
         
         S_REC1: begin
-            if (i_H_Cont < 650 && i_V_Cont < 400) begin
+            if (i_H_Cont < X_cord+X_width && i_V_Cont < Y_cord+Y_height && i_H_Cont >= X_cord && i_V_Cont >= Y_cord) begin
                 // if (last_H_Cont_r != i_H_Cont) begin
-                    // s_addr_w = s_addr_r + 1;
+                    s_addr_w = s_addr_r + 1;
+                    s_data_w =  { 1'b0, reduce_color };
                 // end
-                s_addr_w = s_addr_r + 1;
-                s_data_w =  { 1'b0, reduce_color };
-                if (i_H_Cont == 650 && i_V_Cont == 400) begin
+                if (i_H_Cont == X_cord+X_width-1 && i_V_Cont == Y_cord+Y_height-1) begin
                     state_w = S_WAIT;
                     s_wen_w = 1;
                     s_addr_w = 0;
@@ -124,30 +124,25 @@ always_comb begin
         end
         
         S_WAIT: begin
-            if (i_H_Cont == 298 && i_V_Cont == 100) begin
+            if (i_H_Cont == X_cord-1 && i_V_Cont == Y_cord) begin
                 state_w = S_GIVE;
                 s_wen_w = 1;
                 s_addr_w = 0;
-                // if (last_H_Cont_r != i_H_Cont) begin
-                //     s_addr_w = 0;
-                // end
             end   
         end
 
         S_GIVE: begin
-            
-            if (i_H_Cont < 650 && i_V_Cont < 400 && i_H_Cont >= 299 && i_V_Cont >= 100) begin
-                OriginPicture_w = i_s_data;
+            if (i_H_Cont < X_cord+X_width && i_V_Cont < Y_cord+Y_height && i_H_Cont >= X_cord && i_V_Cont >= Y_cord) begin
                 // if (last_H_Cont_r != i_H_Cont) begin
-                //     s_addr_w = s_addr_r + 1;
+                    s_addr_w = s_addr_r + 1;
+                    OriginPicture_w = i_s_data;
                 // end
-                s_addr_w = s_addr_r + 1;
-                if (i_H_Cont == 650 && i_V_Cont == 400) begin
+                if (i_H_Cont == X_cord+X_width-1 && i_V_Cont == Y_cord+Y_height-1) begin
                     state_w = S_IDLE1;
                 end
             end
             else begin
-                OriginPicture_w = { 10'd500 };
+                OriginPicture_w = 16'hffff;
             end
         end
         default: begin
@@ -156,7 +151,7 @@ always_comb begin
     endcase
 end
 
-integer i;
+// integer i;
 // always_comb begin
 //     state_w = state_r;
 //     s_addr_w = s_addr_r;
@@ -195,7 +190,7 @@ integer i;
 //         //     end
 //         // end
 //         S_REC1: begin
-//             if(i_H_Cont < 600 && i_V_Cont < 200) begin
+//             if(i_H_Cont < 600 && i_V_Cont < 200) begin // i_H_Cont >= 200 && i_V_Cont >= 100
 //                 if(last_H_Cont_r != i_H_Cont) begin
 //                     s_addr_w = s_addr_r + 1;
 //                 end
@@ -274,7 +269,7 @@ always_ff @(posedge i_clk or negedge i_rst_n) begin
         s_addr_r <= 0;
         s_wen_r <= 0;
         s_data_r <= 0;
-        OriginPicture_r <= { 10'd500 };
+        OriginPicture_r <= 0;
         ccd_pause_r <= 0;
         cnt_r <= 0;
         last_H_Cont_r <= 0;

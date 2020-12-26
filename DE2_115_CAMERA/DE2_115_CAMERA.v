@@ -486,6 +486,8 @@ wire 			s_wen;
 wire 	[12:0]	H_Cont;
 wire 	[12:0]	V_Cont;
 
+wire 			is_new_read;
+
 assign SRAM_ADDR = s_addr;
 assign SRAM_CE_N = s_cen;
 assign SRAM_DQ   = (s_wen)? 16'dz : s_dq;
@@ -580,12 +582,12 @@ RAW2RGB				u4	(	.iCLK(D5M_PIXLCLK),
 						);
 `endif
 //Frame count display
-SEG7_LUT_8 			u5	(	.oSEG0(HEX0),.oSEG1(HEX1),
-							.oSEG2(HEX2),.oSEG3(HEX3),
-							.oSEG4(HEX4),.oSEG5(HEX5),
-							.oSEG6(HEX6),.oSEG7(HEX7),
-							.iDIG(Frame_Cont[31:0])
-						);
+// SEG7_LUT_8 			u5	(	.oSEG0(HEX0),.oSEG1(HEX1),
+// 							.oSEG2(HEX2),.oSEG3(HEX3),
+// 							.oSEG4(HEX4),.oSEG5(HEX5),
+// 							.oSEG6(HEX6),.oSEG7(HEX7),
+// 							.iDIG(Frame_Cont[31:0])
+// 						);
 
 sdram_pll 			u6	(
 							.inclk0(CLOCK2_50), // 50M
@@ -683,50 +685,41 @@ I2C_CCD_Config 		u8	(	//	Host Side
 							.I2C_SDAT(D5M_SDATA)
 						);
 //VGA DISPLAY
-TOP 				Top (	// SDRAM Side
-							.i_clk(sdram_ctrl_clk),
-							// .i_clk(D5M_XCLKIN),
-							// .i_clk(VGA_CLK),
-							.i_rst_n(KEY[0]),
-							.i_sdram_data_1(Read_DATA1),
-							.i_sdram_data_2(Read_DATA2),
-							.i_sdram_valid(sdram_valid),
-							// .i_H_Cont(H_Cont),
-							// .i_V_Cont(V_Cont),
-							.i_H_Cont(H_Cont),
-							.i_V_Cont(V_Cont),
-							.i_s_data(s_data),
-							.o_s_data(s_dq),
-							.o_s_wen(s_wen),
-							.o_s_addr(s_addr),
-							.o_display_Red(process_Red),
-							.o_display_Green(process_Green),
-							.o_display_Blue(process_Blue),
-							.o_CCD_pause(top_ccd_pause)
-						);
-VGA_Controller		u1	(	//	Host Side
-							.oRequest(Read),
-							.iRed(Read_DATA2[9:0]),
-							.iGreen({Read_DATA1[14:10],Read_DATA2[14:10]}),
-							.iBlue(Read_DATA1[9:0]),
-							//	VGA Side
-							.oVGA_R(oVGA_R),
-							.oVGA_G(oVGA_G),
-							.oVGA_B(oVGA_B),
-							.oVGA_H_SYNC(VGA_HS),
-							.oVGA_V_SYNC(VGA_VS),
-							.oVGA_SYNC(VGA_SYNC_N),
-							.oVGA_BLANK(VGA_BLANK_N),
-							//	Control Signal
-							.iCLK(VGA_CTRL_CLK),
-							.iRST_N(DLY_RST_2),
-							.iZOOM_MODE_SW(SW[16])
-						);
+OilPainting 	oil_painting	(	// SDRAM Side
+									.i_clk(sdram_ctrl_clk),
+									// .i_clk(D5M_XCLKIN),
+									.i_vga_clk(VGA_CLK),
+									// .i_clk(VGA_CLK),
+									.i_rst_n(KEY[0]),
+									.i_sdram_data_1(Read_DATA1),
+									.i_sdram_data_2(Read_DATA2),
+									.i_sdram_valid(sdram_valid),
+									.i_H_Cont(H_Cont),
+									.i_V_Cont(V_Cont),
+									.i_is_new_read(is_new_read),
+									.i_s_data(s_data),
+									.o_s_data(s_dq),
+									.o_s_wen(s_wen),
+									.o_s_addr(s_addr),
+									.o_display_Red(process_Red),
+									.o_display_Green(process_Green),
+									.o_display_Blue(process_Blue),
+									.o_CCD_pause(top_ccd_pause)
+								);
+
+assign HEX0 = s_addr[3:0];
+assign HEX1 = s_addr[7:4];
+assign HEX2 = s_addr[11:8];
+assign HEX3 = s_addr[15:12];
+assign HEX4 = s_addr[19:16];
+// assign HEX5 = 0;
+// assign HEX6 = 0;
+
 // VGA_Controller		u1	(	//	Host Side
 // 							.oRequest(Read),
-// 							.iRed(process_Red),
-// 							.iGreen(process_Green),
-// 							.iBlue(process_Blue),
+// 							.iRed(Read_DATA2[9:0]),
+// 							.iGreen({Read_DATA1[14:10],Read_DATA2[14:10]}),
+// 							.iBlue(Read_DATA1[9:0]),
 // 							//	VGA Side
 // 							.oVGA_R(oVGA_R),
 // 							.oVGA_G(oVGA_G),
@@ -735,13 +728,32 @@ VGA_Controller		u1	(	//	Host Side
 // 							.oVGA_V_SYNC(VGA_VS),
 // 							.oVGA_SYNC(VGA_SYNC_N),
 // 							.oVGA_BLANK(VGA_BLANK_N),
-// 							.o_H_Cont(H_Cont),
-// 							.o_V_Cont(V_Cont),
-// 							.o_sdram_valid(sdram_valid),
 // 							//	Control Signal
 // 							.iCLK(VGA_CTRL_CLK),
 // 							.iRST_N(DLY_RST_2),
 // 							.iZOOM_MODE_SW(SW[16])
 // 						);
+VGA_Controller		u1	(	//	Host Side
+							.oRequest(Read),
+							.iRed(process_Red),
+							.iGreen(process_Green),
+							.iBlue(process_Blue),
+							//	VGA Side
+							.oVGA_R(oVGA_R),
+							.oVGA_G(oVGA_G),
+							.oVGA_B(oVGA_B),
+							.oVGA_H_SYNC(VGA_HS),
+							.oVGA_V_SYNC(VGA_VS),
+							.oVGA_SYNC(VGA_SYNC_N),
+							.oVGA_BLANK(VGA_BLANK_N),
+							.o_H_Cont(H_Cont),
+							.o_V_Cont(V_Cont),
+							.o_sdram_valid(sdram_valid),
+							.o_is_new_read(is_new_read),
+							//	Control Signal
+							.iCLK(VGA_CTRL_CLK),
+							.iRST_N(DLY_RST_2),
+							.iZOOM_MODE_SW(SW[16])
+						);
 
 endmodule

@@ -56,6 +56,7 @@ module	VGA_Controller(	//	Host Side
 						o_H_Cont,
 						o_V_Cont,
 						o_sdram_valid,
+						o_is_new_read,
 
 						//	Control Signal
 						iCLK,
@@ -111,6 +112,7 @@ output	reg			oVGA_H_SYNC;
 output	reg			oVGA_V_SYNC;
 output	reg			oVGA_SYNC;
 output	reg			oVGA_BLANK;
+output	reg 		o_is_new_read;
 
 wire		[9:0]	mVGA_R;
 wire		[9:0]	mVGA_G;
@@ -143,35 +145,35 @@ output	[12:0]		o_V_Cont;
 assign o_H_Cont = H_Cont;
 assign o_V_Cont = V_Cont;
 
-wire [9:0] red_Tmp, green_Tmp, blue_Tmp;
+// wire [9:0] red_Tmp, green_Tmp, blue_Tmp;
 
-parameter X_offset = 100;
-parameter Y_offset = 100;
+// parameter X_offset = 100;
+// parameter Y_offset = 100;
 
-assign	mVGA_R = ( H_Cont>=X_START+X_offset && H_Cont<X_START+H_SYNC_ACT-X_offset &&
-				   V_Cont>=Y_START+v_mask+Y_offset && V_Cont<Y_START+V_SYNC_ACT-Y_offset )
-				   ? iRed : 0;
-assign	mVGA_G = ( H_Cont>=X_START+X_offset && H_Cont<X_START+H_SYNC_ACT-X_offset &&
-				   V_Cont>=Y_START+v_mask+Y_offset 	&& V_Cont<Y_START+V_SYNC_ACT-Y_offset )
-				   ? iGreen : 0;
-assign	mVGA_B = ( H_Cont>=X_START+X_offset && H_Cont<X_START+H_SYNC_ACT-X_offset &&
-				   V_Cont>=Y_START+v_mask+Y_offset 	&& V_Cont<Y_START+V_SYNC_ACT-Y_offset )
-				   ? iBlue : 0;
+// assign	mVGA_R = ( H_Cont>=X_START+X_offset && H_Cont<X_START+H_SYNC_ACT-X_offset &&
+// 				   V_Cont>=Y_START+v_mask+Y_offset && V_Cont<Y_START+V_SYNC_ACT-Y_offset )
+// 				   ? iRed : 0;
+// assign	mVGA_G = ( H_Cont>=X_START+X_offset && H_Cont<X_START+H_SYNC_ACT-X_offset &&
+// 				   V_Cont>=Y_START+v_mask+Y_offset 	&& V_Cont<Y_START+V_SYNC_ACT-Y_offset )
+// 				   ? iGreen : 0;
+// assign	mVGA_B = ( H_Cont>=X_START+X_offset && H_Cont<X_START+H_SYNC_ACT-X_offset &&
+// 				   V_Cont>=Y_START+v_mask+Y_offset 	&& V_Cont<Y_START+V_SYNC_ACT-Y_offset )
+// 				   ? iBlue : 0;
 
 //=======================================================
 
 assign	mVGA_BLANK	=	mVGA_H_SYNC & mVGA_V_SYNC;
 assign	mVGA_SYNC	=	1'b0;
 
-// assign	mVGA_R = ( H_Cont>=X_START && H_Cont<X_START+H_SYNC_ACT &&
-// 				   V_Cont>=Y_START+v_mask && V_Cont<Y_START+V_SYNC_ACT )
-// 				   ? iRed : 0;
-// assign	mVGA_G = ( H_Cont>=X_START && H_Cont<X_START+H_SYNC_ACT &&
-// 				   V_Cont>=Y_START+v_mask 	&& V_Cont<Y_START+V_SYNC_ACT )
-// 				   ? iGreen : 0;
-// assign	mVGA_B = ( H_Cont>=X_START && H_Cont<X_START+H_SYNC_ACT &&
-// 				   V_Cont>=Y_START+v_mask 	&& V_Cont<Y_START+V_SYNC_ACT )
-// 				   ? iBlue : 0;
+assign	mVGA_R = ( H_Cont>=X_START && H_Cont<X_START+H_SYNC_ACT &&
+				   V_Cont>=Y_START+v_mask && V_Cont<Y_START+V_SYNC_ACT )
+				   ? iRed : 0;
+assign	mVGA_G = ( H_Cont>=X_START && H_Cont<X_START+H_SYNC_ACT &&
+				   V_Cont>=Y_START+v_mask 	&& V_Cont<Y_START+V_SYNC_ACT )
+				   ? iGreen : 0;
+assign	mVGA_B = ( H_Cont>=X_START && H_Cont<X_START+H_SYNC_ACT &&
+				   V_Cont>=Y_START+v_mask 	&& V_Cont<Y_START+V_SYNC_ACT )
+				   ? iBlue : 0;
 
 
 // added by eason
@@ -258,10 +260,16 @@ begin
 		if(H_Cont==0)
 		begin
 			//	V_Sync Counter
-			if( V_Cont < V_SYNC_TOTAL )
-			V_Cont	<=	V_Cont+1;
-			else
-			V_Cont	<=	0;
+			if( V_Cont < V_SYNC_TOTAL ) begin
+				if(V_Cont == 0) begin
+					o_is_new_read <= 0;
+				end			
+				V_Cont	<=	V_Cont+1;
+			end
+			else begin
+				V_Cont	<=	0;
+				o_is_new_read <= 1;
+			end
 			//	V_Sync Generator
 			if(	V_Cont < V_SYNC_CYC )
 			mVGA_V_SYNC	<=	0;
