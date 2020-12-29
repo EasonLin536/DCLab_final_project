@@ -7,6 +7,7 @@ python/venv/
 *verdiLog
 *vfastLog
 *.jpg
+*.bak
 DE2_115_CAMERA/db/
 DE2_115_CAMERA/demo_batch/
 DE2_115_CAMERA/incremental_db/
