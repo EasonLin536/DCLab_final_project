@@ -1,0 +1,14 @@
+Analysis & Synthesis Status : Successful - Sun Jan 03 16:23:19 2021
+Quartus II 64-Bit Version : 15.0.0 Build 145 04/22/2015 SJ Full Version
+Revision Name : DE2_115_TOONIFY
+Top-level Entity Name : DE2_115_TOONIFY
+Family : Cyclone IV E
+Total logic elements : 79,020
+    Total combinational functions : 57,799
+    Dedicated logic registers : 42,750
+Total registers : 42750
+Total pins : 428
+Total virtual pins : 0
+Total memory bits : 59,344
+Embedded Multiplier 9-bit elements : 0
+Total PLLs : 1

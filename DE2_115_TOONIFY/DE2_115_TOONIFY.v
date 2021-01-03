@@ -45,7 +45,7 @@
 //to set the VGA solution
 `include "VGA_Param.h" 
 
-module DE2_115(
+module DE2_115_TOONIFY(
 
 	//////////// CLOCK //////////
 	CLOCK_50,
@@ -518,8 +518,11 @@ assign  VGA_R = oVGA_R[9:2];
 assign  VGA_G = oVGA_G[9:2];
 assign  VGA_B = oVGA_B[9:2];
 
+// added by eason
+wire sdram_valid;
+
 //D5M read 
-always @(posedge D5M_PIXLCLK)
+always@(posedge D5M_PIXLCLK)
 begin
 	rCCD_DATA	<=	D5M_D;
 	rCCD_LVAL	<=	D5M_LVAL;
@@ -578,13 +581,13 @@ RAW2RGB				u4	(	.iCLK(D5M_PIXLCLK),
 							.iY_Cont(Y_Cont)
 						);
 `endif
-Frame count display
-SEG7_LUT_8 			u5	(	.oSEG0(HEX0),.oSEG1(HEX1),
-							.oSEG2(HEX2),.oSEG3(HEX3),
-							.oSEG4(HEX4),.oSEG5(HEX5),
-							.oSEG6(HEX6),.oSEG7(HEX7),
-							.iDIG(Frame_Cont[31:0])
-						);
+//Frame count display
+// SEG7_LUT_8 			u5	(	.oSEG0(HEX0),.oSEG1(HEX1),
+// 							.oSEG2(HEX2),.oSEG3(HEX3),
+// 							.oSEG4(HEX4),.oSEG5(HEX5),
+// 							.oSEG6(HEX6),.oSEG7(HEX7),
+// 							.iDIG(Frame_Cont[31:0])
+// 						);
 
 sdram_pll 			u6	(
 							.inclk0(CLOCK2_50), // 50M
@@ -684,7 +687,10 @@ I2C_CCD_Config 		u8	(	//	Host Side
 //VGA DISPLAY
 Toonify 	toonify	(	// SDRAM Side
 									.i_clk(sdram_ctrl_clk),
+									// .i_clk(D5M_XCLKIN),
 									.i_vga_clk(VGA_CLK),
+									// .i_clk(VGA_CLK),
+									// .i_rst_n(KEY[0]),
 									.i_rst_n(DLY_RST_0),
 									.i_SW(SW[9:1]),
 									.i_sdram_data_1(Read_DATA1),
@@ -703,6 +709,32 @@ Toonify 	toonify	(	// SDRAM Side
 									.o_CCD_pause(top_ccd_pause)
 								);
 
+assign HEX0 = s_addr[3:0];
+assign HEX1 = s_addr[7:4];
+assign HEX2 = s_addr[11:8];
+assign HEX3 = s_addr[15:12];
+assign HEX4 = s_addr[19:16];
+// assign HEX5 = 0;
+// assign HEX6 = 0;
+
+// VGA_Controller		u1	(	//	Host Side
+// 							.oRequest(Read),
+// 							.iRed(Read_DATA2[9:0]),
+// 							.iGreen({Read_DATA1[14:10],Read_DATA2[14:10]}),
+// 							.iBlue(Read_DATA1[9:0]),
+// 							//	VGA Side
+// 							.oVGA_R(oVGA_R),
+// 							.oVGA_G(oVGA_G),
+// 							.oVGA_B(oVGA_B),
+// 							.oVGA_H_SYNC(VGA_HS),
+// 							.oVGA_V_SYNC(VGA_VS),
+// 							.oVGA_SYNC(VGA_SYNC_N),
+// 							.oVGA_BLANK(VGA_BLANK_N),
+// 							//	Control Signal
+// 							.iCLK(VGA_CTRL_CLK),
+// 							.iRST_N(DLY_RST_2),
+// 							.iZOOM_MODE_SW(SW[16])
+// 						);
 VGA_Controller		u1	(	//	Host Side
 							.oRequest(Read),
 							.iRed(process_Red),
@@ -725,25 +757,5 @@ VGA_Controller		u1	(	//	Host Side
 							.iRST_N(DLY_RST_2),
 							.iZOOM_MODE_SW(SW[16])
 						);
-
-// Original code
-// VGA_Controller		u1	(	//	Host Side
-// 							.oRequest(Read),
-// 							.iRed(Read_DATA2[9:0]),
-// 							.iGreen({Read_DATA1[14:10],Read_DATA2[14:10]}),
-// 							.iBlue(Read_DATA1[9:0]),
-// 							//	VGA Side
-// 							.oVGA_R(oVGA_R),
-// 							.oVGA_G(oVGA_G),
-// 							.oVGA_B(oVGA_B),
-// 							.oVGA_H_SYNC(VGA_HS),
-// 							.oVGA_V_SYNC(VGA_VS),
-// 							.oVGA_SYNC(VGA_SYNC_N),
-// 							.oVGA_BLANK(VGA_BLANK_N),
-// 							//	Control Signal
-// 							.iCLK(VGA_CTRL_CLK),
-// 							.iRST_N(DLY_RST_2),
-// 							.iZOOM_MODE_SW(SW[16])
-// 						);
 
 endmodule

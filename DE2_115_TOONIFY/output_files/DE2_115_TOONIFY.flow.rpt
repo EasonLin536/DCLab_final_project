@@ -1,0 +1,132 @@
+Flow report for DE2_115_TOONIFY
+Sun Jan 03 16:30:01 2021
+Quartus II 64-Bit Version 15.0.0 Build 145 04/22/2015 SJ Full Version
+
+
+---------------------
+; Table of Contents ;
+---------------------
+  1. Legal Notice
+  2. Flow Summary
+  3. Flow Settings
+  4. Flow Non-Default Global Settings
+  5. Flow Elapsed Time
+  6. Flow OS Summary
+  7. Flow Log
+  8. Flow Messages
+  9. Flow Suppressed Messages
+
+
+
+----------------
+; Legal Notice ;
+----------------
+Copyright (C) 1991-2015 Altera Corporation. All rights reserved.
+Your use of Altera Corporation's design tools, logic functions 
+and other software and tools, and its AMPP partner logic 
+functions, and any output files from any of the foregoing 
+(including device programming or simulation files), and any 
+associated documentation or information are expressly subject 
+to the terms and conditions of the Altera Program License 
+Subscription Agreement, the Altera Quartus II License Agreement,
+the Altera MegaCore Function License Agreement, or other 
+applicable license agreement, including, without limitation, 
+that your use is for the sole purpose of programming logic 
+devices manufactured by Altera and sold by Altera or its 
+authorized distributors.  Please refer to the applicable 
+agreement for further details.
+
+
+
++----------------------------------------------------------------------------------+
+; Flow Summary                                                                     ;
++------------------------------------+---------------------------------------------+
+; Flow Status                        ; Successful - Sun Jan 03 16:29:33 2021       ;
+; Quartus II 64-Bit Version          ; 15.0.0 Build 145 04/22/2015 SJ Full Version ;
+; Revision Name                      ; DE2_115_TOONIFY                             ;
+; Top-level Entity Name              ; DE2_115_TOONIFY                             ;
+; Family                             ; Cyclone IV E                                ;
+; Device                             ; EP4CE115F29C7                               ;
+; Timing Models                      ; Final                                       ;
+; Total logic elements               ; 66,642 / 114,480 ( 58 % )                   ;
+;     Total combinational functions  ; 57,800 / 114,480 ( 50 % )                   ;
+;     Dedicated logic registers      ; 42,750 / 114,480 ( 37 % )                   ;
+; Total registers                    ; 42750                                       ;
+; Total pins                         ; 428 / 529 ( 81 % )                          ;
+; Total virtual pins                 ; 0                                           ;
+; Total memory bits                  ; 59,344 / 3,981,312 ( 1 % )                  ;
+; Embedded Multiplier 9-bit elements ; 0 / 532 ( 0 % )                             ;
+; Total PLLs                         ; 1 / 4 ( 25 % )                              ;
++------------------------------------+---------------------------------------------+
+
+
++-----------------------------------------+
+; Flow Settings                           ;
++-------------------+---------------------+
+; Option            ; Setting             ;
++-------------------+---------------------+
+; Start date & time ; 01/03/2021 16:19:34 ;
+; Main task         ; Compilation         ;
+; Revision Name     ; DE2_115_TOONIFY     ;
++-------------------+---------------------+
+
+
++------------------------------------------------------------------------------------------------------------------------+
+; Flow Non-Default Global Settings                                                                                       ;
++-------------------------------------+---------------------------------------+---------------+-------------+------------+
+; Assignment Name                     ; Value                                 ; Default Value ; Entity Name ; Section Id ;
++-------------------------------------+---------------------------------------+---------------+-------------+------------+
+; COMPILER_SIGNATURE_ID               ; 5334176997441.160966197410216         ; --            ; --          ; --         ;
+; ENABLE_SIGNALTAP                    ; Off                                   ; --            ; --          ; --         ;
+; MAX_CORE_JUNCTION_TEMP              ; 85                                    ; --            ; --          ; --         ;
+; MIN_CORE_JUNCTION_TEMP              ; 0                                     ; --            ; --          ; --         ;
+; MISC_FILE                           ; v/sdram_pll.bsf                       ; --            ; --          ; --         ;
+; MISC_FILE                           ; v/sdram_pll.ppf                       ; --            ; --          ; --         ;
+; MISC_FILE                           ; v/Line_Buffer1.bsf                    ; --            ; --          ; --         ;
+; MISC_FILE                           ; v/Line_Buffer.bsf                     ; --            ; --          ; --         ;
+; NOMINAL_CORE_SUPPLY_VOLTAGE         ; 1.2V                                  ; --            ; --          ; --         ;
+; PARTITION_COLOR                     ; 16764057                              ; --            ; --          ; Top        ;
+; PARTITION_FITTER_PRESERVATION_LEVEL ; PLACEMENT_AND_ROUTING                 ; --            ; --          ; Top        ;
+; PARTITION_NETLIST_TYPE              ; SOURCE                                ; --            ; --          ; Top        ;
+; POWER_BOARD_THERMAL_MODEL           ; None (CONSERVATIVE)                   ; --            ; --          ; --         ;
+; POWER_PRESET_COOLING_SOLUTION       ; 23 MM HEAT SINK WITH 200 LFPM AIRFLOW ; --            ; --          ; --         ;
+; PROJECT_OUTPUT_DIRECTORY            ; output_files                          ; --            ; --          ; --         ;
+; USE_SIGNALTAP_FILE                  ; stp1.stp                              ; --            ; --          ; --         ;
++-------------------------------------+---------------------------------------+---------------+-------------+------------+
+
+
++-------------------------------------------------------------------------------------------------------------------------------+
+; Flow Elapsed Time                                                                                                             ;
++---------------------------+--------------+-------------------------+---------------------+------------------------------------+
+; Module Name               ; Elapsed Time ; Average Processors Used ; Peak Virtual Memory ; Total CPU Time (on all processors) ;
++---------------------------+--------------+-------------------------+---------------------+------------------------------------+
+; Analysis & Synthesis      ; 00:03:39     ; 1.0                     ; 5437 MB             ; 00:03:49                           ;
+; Fitter                    ; 00:05:55     ; 3.9                     ; 7039 MB             ; 00:13:51                           ;
+; Assembler                 ; 00:00:06     ; 1.0                     ; 4952 MB             ; 00:00:06                           ;
+; TimeQuest Timing Analyzer ; 00:00:24     ; 1.5                     ; 5745 MB             ; 00:00:35                           ;
+; Total                     ; 00:10:04     ; --                      ; --                  ; 00:18:21                           ;
++---------------------------+--------------+-------------------------+---------------------+------------------------------------+
+
+
++----------------------------------------------------------------------------------------+
+; Flow OS Summary                                                                        ;
++---------------------------+------------------+-----------+------------+----------------+
+; Module Name               ; Machine Hostname ; OS Name   ; OS Version ; Processor type ;
++---------------------------+------------------+-----------+------------+----------------+
+; Analysis & Synthesis      ; DESKTOP-F5KTMBV  ; Windows 7 ; 6.2        ; x86_64         ;
+; Fitter                    ; DESKTOP-F5KTMBV  ; Windows 7 ; 6.2        ; x86_64         ;
+; Assembler                 ; DESKTOP-F5KTMBV  ; Windows 7 ; 6.2        ; x86_64         ;
+; TimeQuest Timing Analyzer ; DESKTOP-F5KTMBV  ; Windows 7 ; 6.2        ; x86_64         ;
++---------------------------+------------------+-----------+------------+----------------+
+
+
+------------
+; Flow Log ;
+------------
+quartus_map --read_settings_files=on --write_settings_files=off DE2_115_TOONIFY -c DE2_115_TOONIFY
+quartus_fit --read_settings_files=off --write_settings_files=off DE2_115_TOONIFY -c DE2_115_TOONIFY
+quartus_asm --read_settings_files=off --write_settings_files=off DE2_115_TOONIFY -c DE2_115_TOONIFY
+quartus_sta DE2_115_TOONIFY -c DE2_115_TOONIFY
+
+
+
