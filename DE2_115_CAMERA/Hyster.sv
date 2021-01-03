@@ -50,8 +50,9 @@ always_comb begin
 	// 		o_pixel_w = 0;
 	// 	end
 	// end
-	if (center_pixel < strong_) begin
-		o_pixel_w = (w7 < strong_) ? 1 : 0;
+	if (center_pixel < 2) begin
+		// o_pixel_w = 1;
+		o_pixel_w = (w7 < 3) ? 1 : 0;
 	end
 	else begin
 		o_pixel_w = 0;

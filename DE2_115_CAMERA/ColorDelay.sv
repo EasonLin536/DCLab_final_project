@@ -9,7 +9,7 @@ module ColorDelay(
     output  [19:0]  o_s_addr
 );
 
-parameter BUFFER_LEN = 800*8 +44;
+parameter BUFFER_LEN = 800*10 +44;
 
 logic   [2:0]   state_w, state_r;
 logic           s_wen_w, s_wen_r;
